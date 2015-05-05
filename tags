@@ -1,0 +1,334 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+BUF_LEN	osal.h	42;"	d
+CFilesys_mgr	filesysmgr.cpp	/^CFilesys_mgr::CFilesys_mgr(const char * dev, const char * dir, unsigned long dev_size)$/;"	f	class:CFilesys_mgr
+CFilesys_mgr	filesysmgr.h	/^class CFilesys_mgr$/;"	c
+CROSS_COMPILE	Makefile	/^CROSS_COMPILE = $(CROSS_TOOL_DIR)\/bin\/$/;"	m
+CROSS_TOOL_DIR	Makefile	/^CROSS_TOOL_DIR = \/home\/bobfsa\/fsa_work\/code\/imx6_3035sdk\/i_MX6QSABRELite\/toolchain$/;"	m
+Cthread	thread.cpp	/^Cthread::Cthread()$/;"	f	class:Cthread
+Cthread	thread.h	/^class Cthread$/;"	c
+DATA_PALOAD_LEN	boardctl.h	10;"	d
+DATA_REC_UNITLEN	filesysmgr.cpp	46;"	d	file:
+DBullet	gunparse.h	/^	float DBullet;$/;"	m	struct:__anon11
+DEFAULT_SYSMGR_FILE	filesysmgr.h	46;"	d
+DSPGUN	serialport.cpp	6;"	d	file:
+DataSocket	datasocket.h	/^	DataSocket():m_brunning(0),m_sockstatus(sock_uninit){};$/;"	f	class:DataSocket
+DataSocket	datasocket.h	/^class DataSocket:public Cthread$/;"	c
+EDEBUG	osal.h	47;"	d
+EIMDATA	eimdata.h	/^	EIMDATA():m_brunning(0),sockfd(-1),m_devfd(-1){};$/;"	f	class:EIMDATA
+EIMDATA	eimdata.h	/^class EIMDATA:public Cthread$/;"	c
+EIMUNIT_LEN	eimdata.cpp	6;"	d	file:
+ELEVEL	osal.h	46;"	d
+FILEHEADER_LEN	filesysmgr.h	51;"	d
+FILENODE_LEN	filesysmgr.h	52;"	d
+FILESYSMGR_DEBUG_LVL	filesysmgr.h	54;"	d
+GCC_COMPILE.c	Makefile	/^GCC_COMPILE.c 	= $(CROSS_COMPILE)armv7l-timesys-linux-gnueabi-gcc $/;"	m
+GCC_COMPILE.cxx	Makefile	/^GCC_COMPILE.cxx	= $(CROSS_COMPILE)armv7l-timesys-linux-gnueabi-g++ -c $(GCC_CXX_FLAGS) $(GCC_CPP_FLAGS) -o $@ $<$/;"	m
+GCC_CXX_FLAGS	Makefile	/^GCC_CXX_FLAGS 	= $(C_FLAGS) -Wall -O2 $(SYS_INCLUDE) $(LOCAL_INCLUDE) -DDSPGUN$/;"	m
+GCC_C_FLAGS	Makefile	/^GCC_C_FLAGS 	= $(C_FLAGS) -Wall  -O2 $(SYS_INCLUDE) $(LOCAL_INCLUDE)$/;"	m
+GCC_LD_FLAGS	Makefile	/^GCC_LD_FLAGS	= $(LD_FLAGS) $(SYS_LIB)$/;"	m
+GCC_LINK.cxx	Makefile	/^GCC_LINK.cxx	= $(CROSS_COMPILE)armv7l-timesys-linux-gnueabi-g++  -o $@ $^ $(GCC_LD_FLAGS) $(LOCALE_LIB)$/;"	m
+GCC_STRIP	Makefile	/^GCC_STRIP 	= $(CROSS_COMPILE)armv7l-timesys-linux-gnueabi-strip$/;"	m
+GunResult	gunparse.h	/^}GunResult;$/;"	t	typeref:struct:__anon12
+HEADERS	Makefile	/^HEADERS		= $(wildcard *.h)$/;"	m
+HOST_REQ_HDR	boardctl.h	7;"	d
+LBullet	gunparse.h	/^	float LBullet;$/;"	m	struct:__anon11
+LIBS	Makefile	/^LIBS 	=$/;"	m
+LINUXLIBS_INSTALL_DIR	Makefile	/^LINUXLIBS_INSTALL_DIR = $(CROSS_TOOL_DIR)$/;"	m
+LOCALE_LIB	Makefile	/^LOCALE_LIB 	= 	\\$/;"	m
+LOCAL_ADDR	main.cpp	24;"	d	file:
+LOCAL_INCLUDE	Makefile	/^LOCAL_INCLUDE 	= 	\\$/;"	m
+MAX_CAPACITY_PERCENT	filesysmgr.h	48;"	d
+MAX_OPRATION_FD	filesysmgr.h	47;"	d
+MAX_PATH	filesysmgr.h	45;"	d
+MAX_RESULTLEN	filesysmgr.h	49;"	d
+Mach_angle	gunparse.h	/^	float Mach_angle;$/;"	m	struct:__anon11
+NODEINDEX_NULL	filesysmgr.h	56;"	d
+OBJFILES	Makefile	/^OBJFILES	= $(SOURCES:%.c=%.o)$/;"	m
+PRIORITY_HIGH	thread.h	/^	PRIORITY_HIGH = 30,$/;"	e	enum:thread_priority
+PRIORITY_IDLE	thread.h	/^	PRIORITY_IDLE = 15,$/;"	e	enum:thread_priority
+PRIORITY_NORMAL	thread.h	/^	PRIORITY_NORMAL = 5,$/;"	e	enum:thread_priority
+SEND_UNIT	main.cpp	32;"	d	file:
+SGunShoot_Para	gunparse.h	/^} SGunShoot_Para;$/;"	t	typeref:struct:__anon11
+SOCKDATA_LEN	datasocket.cpp	149;"	d	file:
+SOURCES	Makefile	/^SOURCES 	= main.cpp 	\\$/;"	m
+SUPPORT_AINR	Makefile	/^SUPPORT_AINR 	= no$/;"	m
+SUPPORT_AISOUND	Makefile	/^SUPPORT_AISOUND = no$/;"	m
+SUPPORT_AITALK	Makefile	/^SUPPORT_AITALK 	= no$/;"	m
+SUPPORT_ICONV	Makefile	/^SUPPORT_ICONV  	= no$/;"	m
+SYS_INCLUDE	Makefile	/^SYS_INCLUDE 	= \\$/;"	m
+SYS_LIB	Makefile	/^SYS_LIB 	= $/;"	m
+Serialport	serialport.h	/^	Serialport():m_fd(-1),speed(0),m_brunning(0){};$/;"	f	class:Serialport
+Serialport	serialport.h	/^class Serialport:public Cthread$/;"	c
+TARGET	Makefile	/^TARGET 	= newthunder$/;"	m
+TARGET_REQ_DATA	boardctl.h	8;"	d
+TEST_NFS	filesysmgr.cpp	48;"	d	file:
+THREAD_SEND_UNIT	datasocket.cpp	150;"	d	file:
+VBullet	gunparse.h	/^	float VBullet;$/;"	m	struct:__anon11
+_OSAL_H	osal.h	2;"	d
+__CRITICALSECTION_H__	criticalsection.h	2;"	d
+__DATA_SOCKET_H__	datasocket.h	2;"	d
+__DSP_GUNPARSE_H	gunparse.h	2;"	d
+__EIMDATA_H__	eimdata.h	2;"	d
+__EIMGPS_BOARDCTL_H	boardctl.h	2;"	d
+__FILE_SYSMGR_H	filesysmgr.h	20;"	d
+__HID_TEMPE_H	hidtemp.h	2;"	d
+__SERIAL_PORT_H__	serialport.h	2;"	d
+__THREAD_H__	thread.h	2;"	d
+_already_existed	filesysmgr.h	/^		bool _already_existed;$/;"	m	class:CFilesys_mgr
+_capacity	filesysmgr.h	/^		unsigned long _capacity;$/;"	m	class:CFilesys_mgr
+_fpsysmgr	filesysmgr.h	/^		FILE *_fpsysmgr;$/;"	m	class:CFilesys_mgr
+_initialized	filesysmgr.h	/^		bool _initialized;$/;"	m	class:CFilesys_mgr
+_mgrhdr	filesysmgr.h	/^		filemgr_header _mgrhdr;$/;"	m	class:CFilesys_mgr
+_read	serialport.cpp	/^size_t Serialport::_read(char *buff, size_t size)$/;"	f	class:Serialport
+_read_block	serialport.cpp	/^size_t Serialport::_read_block(char * buf, size_t size)$/;"	f	class:Serialport
+_read_msg	serialport.cpp	/^size_t Serialport::_read_msg(char * buf, size_t size)$/;"	f	class:Serialport
+_working_device	filesysmgr.h	/^		char _working_device[MAX_PATH];$/;"	m	class:CFilesys_mgr
+_working_root_dir	filesysmgr.h	/^		char _working_root_dir[MAX_PATH];$/;"	m	class:CFilesys_mgr
+_write	serialport.cpp	/^size_t Serialport::_write(char *buff, size_t size)$/;"	f	class:Serialport
+all_hid_device_report	hidtemp.cpp	/^int hid_device::all_hid_device_report()$/;"	f	class:hid_device
+append	filesysmgr.cpp	/^int CFilesys_mgr::append(filemgr_handle *datafh)$/;"	f	class:CFilesys_mgr
+bitrate	filesysmgr.h	/^	unsigned long bitrate;$/;"	m	struct:__anon8
+boardctl	boardctl.cpp	/^boardctl::boardctl()$/;"	f	class:boardctl
+boardctl	boardctl.h	/^class boardctl:public Cthread$/;"	c
+body1	boardctl.h	/^	u32 body1;$/;"	m	struct:__anon3
+body2	boardctl.h	/^	u32 body2;$/;"	m	struct:__anon3
+buff	datasocket.h	/^	char *buff;$/;"	m	struct:__anon5
+buffdata	main.cpp	/^char buffdata[SEND_UNIT*2];$/;"	v
+cancel	thread.cpp	/^int Cthread::cancel(void)$/;"	f	class:Cthread
+capdata	boardctl.h	/^	u8 capdata[DATA_PALOAD_LEN];$/;"	m	struct:__anon4
+ccond	criticalsection.h	/^	ccond():cmutex()$/;"	f	class:ccond
+ccond	criticalsection.h	/^class ccond$/;"	c
+ccount_give	criticalsection.h	/^	void  ccount_give()$/;"	f	class:ccount_sem
+ccount_sem	criticalsection.h	/^	ccount_sem()$/;"	f	class:ccount_sem
+ccount_sem	criticalsection.h	/^class ccount_sem$/;"	c
+ccount_take	criticalsection.h	/^	void ccount_take()$/;"	f	class:ccount_sem
+cmutex	criticalsection.h	/^	cmutex() {$/;"	f	class:cmutex
+cmutex	criticalsection.h	/^class cmutex {$/;"	c
+cond_	criticalsection.h	/^	pthread_cond_t cond_;$/;"	m	class:ccond
+cond_	thread.h	/^	ccond cond_;$/;"	m	class:Cthread
+create	filesysmgr.h	/^	time_t create;$/;"	m	struct:__anon9
+cs	filesysmgr.h	/^		cmutex cs;		$/;"	m	class:CFilesys_mgr
+curr_temperature	hidtemp.h	/^	float curr_temperature;$/;"	m	class:temperdev
+current_length	filesysmgr.h	/^	unsigned long current_length;$/;"	m	struct:__anon7
+data_file	filesysmgr.h	/^	char data_file[MAX_PATH];$/;"	m	struct:__anon8
+dataitem	datasocket.h	/^}dataitem;$/;"	t	typeref:struct:__anon5
+datalen	filesysmgr.h	/^	unsigned long datalen;$/;"	m	struct:__anon8
+date	filesysmgr.h	/^	char date[32];	$/;"	m	struct:__anon8
+date	filesysmgr.h	/^	char date[32];$/;"	m	struct:__anon9
+dategps	serialport.cpp	/^static char dategps[BUF_LEN];$/;"	v	file:
+detach	thread.cpp	/^int Cthread::detach(void)$/;"	f	class:Cthread
+detached_	thread.h	/^	bool detached_;$/;"	m	class:Cthread
+device_capacity	filesysmgr.h	/^	unsigned long device_capacity;$/;"	m	struct:__anon7
+devname	serialport.h	/^	char *devname;$/;"	m	class:Serialport
+dis	gunparse.h	/^	float dis;$/;"	m	struct:__anon11
+dsp_data	gunparse.h	/^	dsp_data,$/;"	e	enum:__anon14
+dsp_finish	gunparse.h	/^	dsp_finish$/;"	e	enum:__anon14
+dsp_header	gunparse.h	/^	dsp_header,$/;"	e	enum:__anon14
+dsp_wait	gunparse.h	/^	dsp_wait,$/;"	e	enum:__anon14
+duration	filesysmgr.h	/^	unsigned long duration;$/;"	m	struct:__anon8
+eventcb	datasocket.h	/^	bufferevent_event_cb eventcb;$/;"	m	class:DataSocket
+exit	thread.cpp	/^int Cthread::exit(void)$/;"	f	class:Cthread
+filemgr_handle	filesysmgr.h	/^}filemgr_handle;$/;"	t	typeref:struct:__anon9
+filemgr_header	filesysmgr.h	/^}filemgr_header;$/;"	t	typeref:struct:__anon7
+filemgr_node	filesysmgr.h	/^}filemgr_node;$/;"	t	typeref:struct:__anon8
+flag_	thread.h	/^	int flag_;$/;"	m	class:Cthread
+fp	filesysmgr.h	/^	FILE *fp;$/;"	m	struct:__anon9
+g_datafs	main.cpp	/^CFilesys_mgr *g_datafs=NULL;$/;"	v
+g_datasock	main.cpp	/^DataSocket *g_datasock=NULL;$/;"	v
+g_eimdata	main.cpp	/^EIMDATA *g_eimdata=NULL;$/;"	v
+g_gpssock	main.cpp	/^DataSocket *g_gpssock=NULL;$/;"	v
+g_hidtemp	main.cpp	/^temperdev *g_hidtemp=NULL;$/;"	v
+g_myboard	main.cpp	/^boardctl *g_myboard=NULL;$/;"	v
+get_instance	filesysmgr.cpp	/^CFilesys_mgr *CFilesys_mgr::get_instance()$/;"	f	class:CFilesys_mgr
+get_priority	thread.h	/^	inline int get_priority(void)$/;"	f	class:Cthread
+get_status	datasocket.cpp	/^int DataSocket::get_status()$/;"	f	class:DataSocket
+get_threadid	thread.h	/^	pthread_t get_threadid(void)$/;"	f	class:Cthread
+get_time	util.cpp	/^void get_time(char *date, char *time)$/;"	f
+gps_data	serialport.cpp	/^	gps_data,$/;"	e	enum:__anon15	file:
+gps_finish	serialport.cpp	/^	gps_finish$/;"	e	enum:__anon15	file:
+gps_header	serialport.cpp	/^	gps_header,$/;"	e	enum:__anon15	file:
+gps_time	boardctl.h	/^	u8 gps_time[12];$/;"	m	struct:__anon4
+gps_wait	serialport.cpp	/^	gps_wait,$/;"	e	enum:__anon15	file:
+gpsport	main.cpp	/^Serialport *gpsport=NULL;$/;"	v
+gunparse	gunparse.h	/^class gunparse:public Serialport$/;"	c
+gunresult_get	gunparse.h	/^	gunresult_get=1,$/;"	e	enum:__anon10
+gunresult_nothing	gunparse.h	/^	gunresult_nothing=2$/;"	e	enum:__anon10
+handle_timeout	main.cpp	/^void handle_timeout(int nSock, short sWhat, void * pArg)$/;"	f
+hid_device	hidtemp.h	/^	hid_device(){};$/;"	f	class:hid_device
+hid_device	hidtemp.h	/^class hid_device$/;"	c
+hid_device_close	hidtemp.cpp	/^void hid_device::hid_device_close()$/;"	f	class:hid_device
+hid_device_init	hidtemp.cpp	/^int hid_device::hid_device_init(const char * dev)$/;"	f	class:hid_device
+host_request_proc	boardctl.cpp	/^void host_request_proc(boardctl *pboardctl, char  *data)$/;"	f
+hostreq_msg	boardctl.h	/^}hostreq_msg;$/;"	t	typeref:struct:__anon2
+index	filesysmgr.h	/^	unsigned long index;$/;"	m	struct:__anon8
+init	boardctl.cpp	/^void boardctl::init(DataSocket * outsock)$/;"	f	class:boardctl
+init	datasocket.cpp	/^int DataSocket::init(const char *ip, const char *port, struct event_base *evbase)$/;"	f	class:DataSocket
+init	datasocket.cpp	/^int DataSocket::init(int sockfd, int port,size_t length)$/;"	f	class:DataSocket
+init	eimdata.cpp	/^int EIMDATA::init(int devfd, CFilesys_mgr * fs, boardctl *ctl)$/;"	f	class:EIMDATA
+init	eimdata.cpp	/^int EIMDATA::init(int devfd, CFilesys_mgr *fs, DataSocket *datasock)$/;"	f	class:EIMDATA
+init	hidtemp.cpp	/^int temperdev::init(const char * devname, boardctl *ctl)$/;"	f	class:temperdev
+init	serialport.cpp	/^int Serialport::init(char *devname, int mode, int speed, size_t size)$/;"	f	class:Serialport
+join	thread.cpp	/^int Cthread::join(void)$/;"	f	class:Cthread
+last_result	gunparse.h	/^	GunResult last_result;$/;"	m	class:gunparse
+length	datasocket.h	/^	size_t length;$/;"	m	struct:__anon5
+length	filesysmgr.h	/^	unsigned long length;$/;"	m	struct:__anon9
+locationGPS	serialport.cpp	/^const char *locationGPS="$GPRMC";$/;"	v
+locationgps	serialport.cpp	/^static char locationgps[BUF_LEN];$/;"	v	file:
+lock	criticalsection.h	/^	inline void lock() {$/;"	f	class:cmutex
+m_board	serialport.h	/^	boardctl *m_board;$/;"	m	class:Serialport
+m_brunning	boardctl.h	/^	int m_brunning;$/;"	m	class:boardctl
+m_brunning	datasocket.h	/^	int	m_brunning;$/;"	m	class:DataSocket
+m_brunning	eimdata.h	/^	int m_brunning;$/;"	m	class:EIMDATA
+m_brunning	hidtemp.h	/^	int m_brunning;$/;"	m	class:temperdev
+m_brunning	serialport.h	/^	int	m_brunning;$/;"	m	class:Serialport
+m_bufev	datasocket.h	/^	struct bufferevent *m_bufev;$/;"	m	class:DataSocket	typeref:struct:DataSocket::bufferevent
+m_destip	datasocket.h	/^	char *m_destip;$/;"	m	class:DataSocket
+m_destport	datasocket.h	/^	char *m_destport;$/;"	m	class:DataSocket
+m_devfd	eimdata.h	/^	int m_devfd;$/;"	m	class:EIMDATA
+m_devfd	hidtemp.h	/^	int m_devfd;$/;"	m	class:hid_device
+m_dinfo	hidtemp.h	/^ 	struct hiddev_devinfo m_dinfo;$/;"	m	class:hid_device	typeref:struct:hid_device::hiddev_devinfo
+m_direction	boardctl.h	/^	u8 m_direction[4];$/;"	m	class:boardctl
+m_downsock	boardctl.h	/^	DataSocket *m_downsock;$/;"	m	class:boardctl
+m_evbase	datasocket.h	/^	struct event_base *m_evbase;$/;"	m	class:DataSocket	typeref:struct:DataSocket::event_base
+m_fd	serialport.h	/^	int m_fd;$/;"	m	class:Serialport
+m_fssave	eimdata.h	/^	CFilesys_mgr *m_fssave;$/;"	m	class:EIMDATA
+m_gpstime	boardctl.h	/^	u8 m_gpstime[12];$/;"	m	class:boardctl
+m_handle	filesysmgr.h	/^		filemgr_handle *m_handle;$/;"	m	class:CFilesys_mgr
+m_location	boardctl.h	/^	u8 m_location[16];$/;"	m	class:boardctl
+m_msgqueue	datasocket.h	/^	std::queue<dataitem *>	m_msgqueue;$/;"	m	class:DataSocket
+m_msgqueue	serialport.h	/^	std::queue<char *>	m_msgqueue;$/;"	m	class:Serialport
+m_msgsize	datasocket.h	/^	int m_msgsize;$/;"	m	class:DataSocket
+m_msgsize	serialport.h	/^	int m_msgsize;$/;"	m	class:Serialport
+m_name	hidtemp.h	/^	char m_name[100];$/;"	m	class:hid_device
+m_node	filesysmgr.h	/^		filemgr_node *m_node;$/;"	m	class:CFilesys_mgr
+m_outctl	eimdata.h	/^	boardctl *m_outctl;$/;"	m	class:EIMDATA
+m_pfilesys	filesysmgr.h	/^		CFilesys_mgr *m_pfilesys;$/;"	m	class:CFilesys_mgr
+m_port	datasocket.h	/^	int m_port;$/;"	m	class:DataSocket
+m_rxevbuf	boardctl.h	/^	struct evbuffer *m_rxevbuf;$/;"	m	class:boardctl	typeref:struct:boardctl::evbuffer
+m_sock	eimdata.h	/^	DataSocket *m_sock;$/;"	m	class:EIMDATA
+m_sockfd	datasocket.h	/^	int m_sockfd;$/;"	m	class:DataSocket
+m_sockstatus	datasocket.h	/^	int m_sockstatus;$/;"	m	class:DataSocket
+m_submitctl	hidtemp.h	/^	boardctl *m_submitctl;$/;"	m	class:temperdev
+m_temparture	boardctl.h	/^	u8 m_temparture[4];$/;"	m	class:boardctl
+m_upsock	boardctl.h	/^	DataSocket *m_upsock;$/;"	m	class:boardctl
+m_version	hidtemp.h	/^	int m_version;$/;"	m	class:hid_device
+main	main.cpp	/^int main(int argc, char *argv[])$/;"	f
+msg_GPS	boardctl.h	/^	msg_GPS=0x0110,$/;"	e	enum:__anon1
+msg_datapacket	boardctl.h	/^	msg_datapacket=0x0020,$/;"	e	enum:__anon1
+msg_direciton	boardctl.h	/^	msg_direciton=0x0130,$/;"	e	enum:__anon1
+msg_hdr	boardctl.h	/^	u16 msg_hdr;$/;"	m	struct:__anon2
+msg_hdr	boardctl.h	/^	u16 msg_hdr;$/;"	m	struct:__anon3
+msg_hdr	boardctl.h	/^	u16 msg_hdr;$/;"	m	struct:__anon4
+msg_mutex	datasocket.h	/^	cmutex msg_mutex;$/;"	m	class:DataSocket
+msg_mutex	eimdata.h	/^	cmutex msg_mutex;$/;"	m	class:EIMDATA
+msg_mutex	serialport.h	/^	cmutex msg_mutex;$/;"	m	class:Serialport
+msg_tag	gunparse.h	/^	unsigned char msg_tag[4];$/;"	m	struct:__anon12
+msg_temperatue	boardctl.h	/^	msg_temperatue=0x0120,$/;"	e	enum:__anon1
+msg_type	boardctl.h	/^	u16 msg_type;$/;"	m	struct:__anon2
+msg_type	boardctl.h	/^	u16 msg_type;$/;"	m	struct:__anon3
+msg_type	boardctl.h	/^	u16 msg_type;$/;"	m	struct:__anon4
+msg_type	gunparse.h	/^	unsigned int msg_type;$/;"	m	struct:__anon12
+mutex_	criticalsection.h	/^	pthread_mutex_t mutex_;$/;"	m	class:cmutex
+mutex_scope	criticalsection.h	/^	mutex_scope(cmutex *pcrit) {$/;"	f	class:mutex_scope
+mutex_scope	criticalsection.h	/^class mutex_scope {$/;"	c
+my_evbase	main.cpp	/^struct event_base *my_evbase;$/;"	v	typeref:struct:event_base
+name	filesysmgr.h	/^	char name[MAX_PATH];$/;"	m	struct:__anon9
+new_record_handle	filesysmgr.cpp	/^filemgr_handle *CFilesys_mgr::new_record_handle()$/;"	f	class:CFilesys_mgr
+nodeindex_start	filesysmgr.h	/^	int nodeindex_start, nodeindex_stop;	$/;"	m	struct:__anon7
+nodeindex_stop	filesysmgr.h	/^	int nodeindex_start, nodeindex_stop;	$/;"	m	struct:__anon7
+nodeitem_len	filesysmgr.h	/^	unsigned long nodeitem_len;$/;"	m	struct:__anon7
+nodenum	filesysmgr.h	/^	unsigned long nodenum;$/;"	m	struct:__anon7
+nothing	gunparse.h	/^		unsigned char nothing[sizeof(SGunShoot_Para)];$/;"	m	union:__anon12::__anon13
+on_datasock_read	main.cpp	/^void on_datasock_read(struct bufferevent *bev, void *ctx)$/;"	f
+on_gpssock_write	main.cpp	/^void  on_gpssock_write(struct bufferevent *bev, void *ctx)$/;"	f
+on_socket_event	main.cpp	/^void on_socket_event(struct bufferevent *bev, short ev, void *ctx)$/;"	f
+para	gunparse.h	/^		SGunShoot_Para para;$/;"	m	union:__anon12::__anon13
+pcrit_	criticalsection.h	/^	cmutex *pcrit_;$/;"	m	class:mutex_scope
+priority_	thread.h	/^	thread_priority priority_;$/;"	m	class:Cthread
+readcb	datasocket.h	/^	bufferevent_data_cb readcb;$/;"	m	class:DataSocket
+readdata	eimdata.cpp	/^static char readdata[EIMUNIT_LEN*2];$/;"	v	file:
+release	datasocket.cpp	/^void DataSocket::release()$/;"	f	class:DataSocket
+release	filesysmgr.cpp	/^int CFilesys_mgr::release(filemgr_handle *fh)$/;"	f	class:CFilesys_mgr
+release	hidtemp.cpp	/^int temperdev::release()$/;"	f	class:temperdev
+release	serialport.cpp	/^int Serialport::release()$/;"	f	class:Serialport
+remove_content	filesysmgr.cpp	/^int CFilesys_mgr::remove_content(FILE *fp, unsigned long total, unsigned long offset, unsigned long rmlen)$/;"	f	class:CFilesys_mgr
+remove_first	filesysmgr.cpp	/^int CFilesys_mgr::remove_first()$/;"	f	class:CFilesys_mgr
+report	filesysmgr.cpp	/^int CFilesys_mgr::report(int fd)$/;"	f	class:CFilesys_mgr
+request_handle	filesysmgr.cpp	/^int CFilesys_mgr::request_handle()$/;"	f	class:CFilesys_mgr
+reserved	filesysmgr.h	/^	char reserved[FILEHEADER_LEN-24];$/;"	m	struct:__anon7
+reserved	filesysmgr.h	/^	char reserved[FILENODE_LEN-16-32-32-MAX_PATH];$/;"	m	struct:__anon8
+reserved	gunparse.h	/^	float reserved;$/;"	m	struct:__anon11
+reserved	gunparse.h	/^	unsigned char reserved[16];$/;"	m	struct:__anon12
+restart	datasocket.cpp	/^int DataSocket::restart()$/;"	f	class:DataSocket
+result	gunparse.h	/^	}result;$/;"	m	struct:__anon12	typeref:union:__anon12::__anon13
+result_msg_tag	gunparse.cpp	/^char *result_msg_tag="$FSA";$/;"	v
+resume	thread.cpp	/^int Cthread::resume(void)$/;"	f	class:Cthread
+routines	thread.cpp	/^void *Cthread::routines(void *pv)$/;"	f	class:Cthread
+sem_	criticalsection.h	/^	sem_t sem_; 	$/;"	m	class:ccount_sem
+senddata	main.cpp	/^char senddata[SEND_UNIT*2];$/;"	v
+set_boardctl	serialport.cpp	/^void Serialport::set_boardctl(boardctl * ctl)$/;"	f	class:Serialport
+set_priority	thread.cpp	/^int Cthread::set_priority(thread_priority priority)$/;"	f	class:Cthread
+set_socket_param	util.cpp	/^int set_socket_param(int sockfd)$/;"	f
+setcb	datasocket.cpp	/^int DataSocket::setcb(bufferevent_data_cb cb1, bufferevent_data_cb cb2, bufferevent_event_cb cb3)$/;"	f	class:DataSocket
+signal	criticalsection.h	/^	inline void signal()$/;"	f	class:ccond
+sock_dataing	datasocket.h	/^	sock_dataing,$/;"	e	enum:__anon6
+sock_destroy	datasocket.h	/^	sock_destroy$/;"	e	enum:__anon6
+sock_init_fail	datasocket.h	/^	sock_init_fail,$/;"	e	enum:__anon6
+sock_init_nodata	datasocket.h	/^	sock_init_nodata,$/;"	e	enum:__anon6
+sock_uninit	datasocket.h	/^	sock_uninit,$/;"	e	enum:__anon6
+socket_status	datasocket.h	/^}socket_status;$/;"	t	typeref:enum:__anon6
+sockfd	eimdata.h	/^	int sockfd;$/;"	m	class:EIMDATA
+speed	serialport.h	/^	int speed;		$/;"	m	class:Serialport
+start	thread.cpp	/^int Cthread::start(int waiting)$/;"	f	class:Cthread
+started_	thread.h	/^	bool started_;$/;"	m	class:Cthread
+stop	thread.cpp	/^int Cthread::stop()$/;"	f	class:Cthread
+sub_routine	boardctl.cpp	/^void *boardctl::sub_routine(void)$/;"	f	class:boardctl
+sub_routine	datasocket.cpp	/^void *DataSocket::sub_routine(void)$/;"	f	class:DataSocket
+sub_routine	eimdata.cpp	/^void *EIMDATA::sub_routine(void)$/;"	f	class:EIMDATA
+sub_routine	hidtemp.cpp	/^void *temperdev::sub_routine(void)$/;"	f	class:temperdev
+sub_routine	serialport.cpp	/^void *Serialport::sub_routine(void)$/;"	f	class:Serialport
+submit	boardctl.cpp	/^void boardctl::submit(void *buf, size_t size)$/;"	f	class:boardctl
+submit	datasocket.cpp	/^int DataSocket::submit(char *buff, size_t size)$/;"	f	class:DataSocket
+submit	filesysmgr.cpp	/^int CFilesys_mgr::submit(void *buff, size_t size)$/;"	f	class:CFilesys_mgr
+submit_gps	boardctl.cpp	/^void boardctl::submit_gps(void *data, size_t len)$/;"	f	class:boardctl
+submit_location	boardctl.cpp	/^void boardctl::submit_location(void * data, size_t len)$/;"	f	class:boardctl
+submit_tempature	boardctl.cpp	/^void boardctl::submit_tempature(void *data, size_t len)$/;"	f	class:boardctl
+suspend	thread.cpp	/^int Cthread::suspend(void)$/;"	f	class:Cthread
+svr_ipaddr	main.cpp	/^char *svr_ipaddr;$/;"	v
+svr_port	main.cpp	/^unsigned int svr_port;$/;"	v
+targetreply_data	boardctl.h	/^}targetreply_data;$/;"	t	typeref:struct:__anon4
+targetreply_msg	boardctl.h	/^}targetreply_msg;$/;"	t	typeref:struct:__anon3
+temparture	boardctl.h	/^	u8 temparture[4];$/;"	m	struct:__anon4
+temperature_standard	hidtemp.h	/^	int temperature_standard;$/;"	m	class:temperdev
+temperdev	hidtemp.h	/^	temperdev(){};$/;"	f	class:temperdev
+temperdev	hidtemp.h	/^class temperdev:public hid_device,public Cthread$/;"	c
+tgtGPS	serialport.cpp	/^const char *tgtGPS="$GPRMC";$/;"	v
+thread_	thread.h	/^	pthread_t thread_;$/;"	m	class:Cthread
+thread_priority	thread.h	/^enum thread_priority$/;"	g
+time	filesysmgr.h	/^	char time[32];$/;"	m	struct:__anon8
+time	filesysmgr.h	/^	char time[32];$/;"	m	struct:__anon9
+timegps	serialport.cpp	/^static char timegps[BUF_LEN];$/;"	v	file:
+u16	osal.h	/^typedef unsigned short u16;$/;"	t
+u32	osal.h	/^typedef unsigned long u32;$/;"	t
+u8	osal.h	/^typedef unsigned char u8;$/;"	t
+unlock	criticalsection.h	/^	inline void unlock() {$/;"	f	class:cmutex
+wait	criticalsection.h	/^	inline void wait()$/;"	f	class:ccond
+wait	thread.cpp	/^int Cthread::wait(void)$/;"	f	class:Cthread
+writecb	datasocket.h	/^	bufferevent_data_cb writecb;$/;"	m	class:DataSocket
+~CFilesys_mgr	filesysmgr.cpp	/^CFilesys_mgr::~CFilesys_mgr()$/;"	f	class:CFilesys_mgr
+~Cthread	thread.cpp	/^Cthread::~Cthread()$/;"	f	class:Cthread
+~DataSocket	datasocket.h	/^	~DataSocket(){};$/;"	f	class:DataSocket
+~EIMDATA	eimdata.h	/^	~EIMDATA(){};$/;"	f	class:EIMDATA
+~Serialport	serialport.h	/^	~Serialport(){};$/;"	f	class:Serialport
+~boardctl	boardctl.cpp	/^boardctl::~boardctl()$/;"	f	class:boardctl
+~ccond	criticalsection.h	/^	~ccond()$/;"	f	class:ccond
+~ccount_sem	criticalsection.h	/^	~ccount_sem()$/;"	f	class:ccount_sem
+~cmutex	criticalsection.h	/^	~cmutex() {$/;"	f	class:cmutex
+~hid_device	hidtemp.h	/^	~hid_device(){};$/;"	f	class:hid_device
+~mutex_scope	criticalsection.h	/^	~mutex_scope() {$/;"	f	class:mutex_scope
+~temperdev	hidtemp.h	/^	~temperdev(){};$/;"	f	class:temperdev
