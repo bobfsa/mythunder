@@ -43,7 +43,7 @@
 #include "osal.h"
 
 
-#define DATA_REC_UNITLEN	0x8000000
+#define DATA_REC_UNITLEN	0x1000000
 
 #define TEST_NFS
 

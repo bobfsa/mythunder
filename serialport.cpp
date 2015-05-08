@@ -3,11 +3,10 @@
 #include "gunparse.h"
 
 
-#define _THUNDER_
+#define DSPGUN
 
-//const char *tgtGPS="$GPRMC";
-//const char *locationGPS="$GPRMC";
-const char *locationGPS="$AHRS:";
+const char *tgtGPS="$GPRMC";
+const char *locationGPS="$GPRMC";
 
 enum
 {
@@ -16,9 +15,7 @@ enum
 	gps_data,
 	gps_finish
 };
-
-
-int Serialport::init(const char *devname, int mode, int speed, size_t size)
+int Serialport::init(char *devname, int mode, int speed, size_t size)
 {
 	if(mode == 0)
 	{
@@ -85,7 +82,6 @@ int Serialport::init(const char *devname, int mode, int speed, size_t size)
 	{
 		struct stat myStatBuf;
 		struct termios newtio, oldtio;
-		speed_t myspeed;
 
 		//m_fd=open(devname, O_RDWR|O_NONBLOCK|O_NDELAY|O_NOCTTY);
 		m_fd=open(devname, O_RDWR|O_NONBLOCK|O_NDELAY|O_NOCTTY);
@@ -116,23 +112,8 @@ int Serialport::init(const char *devname, int mode, int speed, size_t size)
 		newtio.c_cflag &= ~CSIZE; 
 		newtio.c_cflag |= CS8;
 		newtio.c_cflag &= ~PARENB;
-		switch(speed)
-		{
-			case 9600:
-			{
-				myspeed=B9600;
-				break;
-			}
-			case 115200:
-			{
-				myspeed=B115200;
-				break;
-			}
-			default:
-				break;
-		}
-	         cfsetispeed(&newtio, myspeed);        
-		cfsetospeed(&newtio, myspeed);
+	    cfsetispeed(&newtio, B9600);        
+		cfsetospeed(&newtio, B9600);
 		newtio.c_cflag &=  ~CSTOPB;
 		newtio.c_cc[VTIME]  = 0;    
 		newtio.c_cc[VMIN] = 0;
@@ -236,130 +217,109 @@ void *Serialport::sub_routine(void)
 	int len=0,start=0;
 	int nret=0;
 	static char buf[BUF_LEN*4];
-	static gps_packet t_rxgpspkt;
-	char *pmsg=NULL;	
-	int tmp_time;
+	static char gpsdata[BUF_LEN];	
+
+	char *pmsg=NULL;
 
 	int head_index=0,curr_index=0;
 	int cnt=0;
 	int gps_state=gps_wait;
 	char *ptime=NULL;
-	char *pdata=(char *)&t_rxgpspkt;
 
-
-	printf("%s start : pkt size:%d\n",__func__, sizeof(gps_packet));
+	//printf("%s start \n",__func__);
 	while (m_brunning)	
 	{		
-		nret=read(m_fd, &buf[head_index], 1);
+		nret=read(m_fd, &(buf[head_index]), 1);
 		if(nret <= 0)
 		{
 			usleep(10000);
 			continue ;
 		}
-		//printf("rx: 0x%x\n", buf[head_index]);
+		printf("rx: 0x%x\n", buf[0]);
 
-		switch(gps_state)
-		{
-			case gps_wait:
+		{		
+			switch(gps_state)
 			{
-				if(buf[head_index]== '$')
+				case gps_wait:
 				{
-					*pdata++=buf[head_index];
-					//printf("New Packet Start dsp_header\n");
-					cnt = 1;
-					head_index = 1;
-					gps_state=gps_header;
+					if(buf[head_index]== '$')
+					{
+						//printf("New Packet Start\n");
+						cnt = nret;
+						head_index = nret;
+						//cnt=1;
+						gps_state=gps_data;
+					}
+					break;
 				}
-				break;
+				case gps_header:
+				{
+					break;		
+				}
+				case gps_data:
+				{
+					cnt += nret;
+					head_index += nret;
+					//cnt++;					
+					if(buf[cnt-2]==0xd && buf[cnt-1]==0xa)
+					{
+						gps_state=gps_finish;
+					}
+					break;
+				}
 			}
-			case gps_header:
-			{
-				*pdata++=buf[head_index];
-				head_index++;
-				if(head_index == strlen(locationGPS) &&\
-					(memcmp(buf, locationGPS,  strlen(locationGPS)) == 0))
-				{
-					memcpy(pdata, locationGPS,  strlen(locationGPS));
-					gps_state=gps_data;
-					cnt=head_index;
-					head_index=0;
-					//printf(" Packet Start dsp_data: %d %d \n", head_index, strlen(result_msg_tag));
-				}
-				else if(head_index == strlen(locationGPS) &&\
-					(memcmp(buf, locationGPS,  strlen(locationGPS))!= 0))
-				{
-					gps_state=gps_wait;
-					head_index=0;
-					pdata=(char *)&t_rxgpspkt;
-					printf(" Packet back to  dsp_wait\n");
-				}
-				break;		
-			}
-			case gps_data:
-			{
-				*pdata++=buf[head_index];
-				cnt ++;
-				if(cnt == sizeof(gps_packet))
-				{
-					gps_state=gps_finish;
-					cnt=0;	
-					//printf(" Packet end dsp_finish\n");
-				}
-				break;
-			}			
+
 		}
-
 
 		if(gps_state != gps_finish)
 			continue ;
+		else
+		{
+			gps_state=gps_wait;
+			head_index=0;
+		}
+				
 
-		gps_state=gps_wait;
-		head_index=0;
-		pdata=(char *)&t_rxgpspkt;		
+		memset(gpsdata, 0, sizeof(gpsdata));
+		memcpy(gpsdata, buf, cnt);
+		head_index = 0;
+
+
+		if(strncmp((const char *)gpsdata, tgtGPS, strlen(tgtGPS)) != 0)
+		{			
+		}
+		else
+		{
+			memset(timegps, 0, sizeof(timegps));
+			ptime=strchr(gpsdata, ',')+1;
+			memcpy(timegps, ptime, strchr(ptime, ',')-ptime);
+			printf("Time GPS: %s\n", timegps);
+
+			if(m_board)
+				m_board->submit_gps(timegps, 12);
+
+			for(int i=0;i<8;i++)
+				ptime=strchr(ptime,',')+1;
+
+			memset(dategps, 0, sizeof(dategps));
+			memcpy(dategps, ptime, strchr(ptime, ',')-ptime);
+			printf("Date GPS: %s\n", dategps);
+
+			if(m_board)
+				m_board->submit_location(dategps, 12);
+		}		
+
 		cnt=0;
 
-		memset(buf, 0, sizeof(buf));
-		memcpy(buf, t_rxgpspkt.header, 6);
-		printf("header: %s\n", buf);
-		
-		memset(buf, 0, sizeof(buf));
-		memcpy(buf, &(t_rxgpspkt.time[6]), 2);
-		tmp_time=atoi(buf);
-		tmp_time=(tmp_time+8)%24;
-		sprintf(&buf[6], "%02d",tmp_time);
-		memcpy(buf, &(t_rxgpspkt.time),6);
-		memcpy(&buf[8], &(t_rxgpspkt.time[8]), 4);		
-		printf("time: %s\n", buf);
-		memcpy(t_rxgpspkt.time, buf, 12);
-		
-		memset(buf, 0, sizeof(buf));
-		memcpy(buf, (t_rxgpspkt.availabe), 1);
-		printf("availabe: %s\n", buf);
-		memset(buf, 0, sizeof(buf));
-		memcpy(buf, t_rxgpspkt.longitude, 8);
-		printf("longitude: %s\n", buf);
-		memset(buf, 0, sizeof(buf));
-		memcpy(buf, t_rxgpspkt.latitude, 8);
-		printf("latitude: %s\n", buf);
-		memset(buf, 0, sizeof(buf));
-		memcpy(buf, t_rxgpspkt.angle, 8);
-		printf("angle: %s\n", buf);
-		if(m_board)
-		{
-			m_board->submit_gpstime(t_rxgpspkt.time, 12);
-			m_board->submit_location(t_rxgpspkt.longitude, 16);
-			m_board->submit_valid_locate(t_rxgpspkt.availabe, 1);
-			m_board->submit_angle(t_rxgpspkt.angle, 8);
-		}
-		
-	}
 
+	}
 #endif
 
 #if defined(DSPGUN)
 	int len=0,start=0;
 	int nret=0;
 	static char buf[BUF_LEN*4];
+	static char gpsdata[BUF_LEN];	
 	char *pmsg=NULL;
 
 	int head_index=0,curr_index=0;

@@ -1,7 +1,7 @@
 #include "gunparse.h"
 
 
-const char *result_msg_tag="$FSA";
+char *result_msg_tag="$FSA";
 
 #if 0
 void *gunparse::sub_routine(void)

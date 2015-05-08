@@ -28,22 +28,18 @@
 #include <linux/byteorder/little_endian.h>
 #include <sys/ioctl.h>
 #include <linux/hiddev.h>
-#include <execinfo.h>
-#include <signal.h>
 
 #include <event2/event.h>
 #include <event2/event_struct.h>
 #include <event2/bufferevent.h>
 #include <event2/buffer.h>
-#include <event2/thread.h>
+
 
 typedef unsigned long u32;
 typedef unsigned short u16;
 typedef unsigned char u8;
 
 #define BUF_LEN 0x200
-
-
 
 extern void get_time(char *date, char *time);
 

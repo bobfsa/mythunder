@@ -3,10 +3,7 @@
 #include "eimdata.h"
 
 
-#define EIMUNIT_LEN 15600
-#define EIMUNIT_HEADER 	0x5A5B
-#define EIMUNIT_HDRLEN	0x0034
-
+#define EIMUNIT_LEN 14400
 static char readdata[EIMUNIT_LEN*2];
 
 
@@ -27,7 +24,6 @@ int EIMDATA::init(int devfd, CFilesys_mgr * fs, boardctl *ctl)
 {
 	m_devfd=devfd;
 	m_fssave=fs;
-	m_outctl=ctl;
 	m_sock=NULL;
 	m_brunning = 1;
 	if(!m_fssave)
@@ -37,19 +33,9 @@ int EIMDATA::init(int devfd, CFilesys_mgr * fs, boardctl *ctl)
 	detach();	
 }
 
-void EIMDATA::release()
-{
-	stop();
-	m_brunning = 0;
-	usleep(1000000);		
-}
-
 void *EIMDATA::sub_routine(void)
 {
 	size_t nbytes;
-	int first_frame=0;
-	short *pdata;
-	int index=0;
 	
 	while(m_brunning)			
 	{				
@@ -63,32 +49,17 @@ void *EIMDATA::sub_routine(void)
 			usleep(10000);			
 			continue ;
 		}
-		index=0;
-		if(first_frame == 0)
-		{
-			pdata=(short *)readdata;
-			index=0;
-			do
-			{
-				if(*pdata == EIMUNIT_HEADER && *(pdata+1)==EIMUNIT_HDRLEN)
-				{		
-					first_frame=1;
-					break;
-				}
-				pdata++;
-				index++;
-			}while((index*2)<nbytes);
-		}
-
-
+		//else
+		//	usleep(100000);
 		
 	
-		//if(m_fssave)
-		//	m_fssave->submit(readdata, nbytes);
+		if(m_fssave)
+			m_fssave->submit(readdata, nbytes);
+
 		//if(m_sock)
 		//	m_sock->submit(readdata, nbytes);
-		if(m_outctl)
-			m_outctl->submit(readdata, nbytes-(index*2));
+		//if(m_outctl)
+		//	m_outctl->submit(readdata, nbytes);
 	}	
 
 	printf("EIM %s exit\n", __func__);

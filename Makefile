@@ -34,21 +34,21 @@ LOCAL_INCLUDE 	= 	\
 
 # =====================================================================================#
 # local lib
-# ====================================================================================#
+# =====================================================================================#
 LOCALE_LIB 	= 	\
-			-L$(LINUXLIBS_INSTALL_DIR)/lib -lpthread -levent_core -levent_pthreads -levent_extra 
+			-L$(LINUXLIBS_INSTALL_DIR)/lib -lpthread -levent
 
 # =====================================================================================#
 # system toolchain
 # =====================================================================================#
-GCC_C_FLAGS 	= $(C_FLAGS) -Wall  -O0 $(SYS_INCLUDE) $(LOCAL_INCLUDE)
-GCC_COMPILE.c 	= $(CROSS_COMPILE)armv7l-timesys-linux-gnueabi-g++ 
+GCC_C_FLAGS 	= $(C_FLAGS) -Wall  -O2 $(SYS_INCLUDE) $(LOCAL_INCLUDE)
+GCC_COMPILE.c 	= $(CROSS_COMPILE)armv7l-timesys-linux-gnueabi-gcc 
 
 export $(GCC_C_FLAGS) $(GCC_COMPILE.c)
 
 GCC_LD_FLAGS	= $(LD_FLAGS) $(SYS_LIB)
 
-GCC_CXX_FLAGS 	= $(C_FLAGS) -Wall -O0 $(SYS_INCLUDE) $(LOCAL_INCLUDE) -DDSPGUN -fno-strict-aliasing
+GCC_CXX_FLAGS 	= $(C_FLAGS) -Wall -O2 $(SYS_INCLUDE) $(LOCAL_INCLUDE) -DDSPGUN
 #GCC_CXX_FLAGS 	= $(C_FLAGS) -Wall -Werror $(SYS_INCLUDE)
 GCC_COMPILE.cxx	= $(CROSS_COMPILE)armv7l-timesys-linux-gnueabi-g++ -c $(GCC_CXX_FLAGS) $(GCC_CPP_FLAGS) -o $@ $<
 GCC_LINK.cxx	= $(CROSS_COMPILE)armv7l-timesys-linux-gnueabi-g++  -o $@ $^ $(GCC_LD_FLAGS) $(LOCALE_LIB)
@@ -91,9 +91,6 @@ SOURCES 	= main.cpp 	\
 			filesysmgr.cpp \
 			eimdata.cpp \
 			util.cpp \
-			datasocket.cpp \
-			hidtemp.cpp \
-			boardctl.cpp \
 			gunparse.cpp
 
 
@@ -138,7 +135,8 @@ OBJFILES	= $(SOURCES:%.c=%.o)
 # main target
 # =====================================================================================#
 
-TARGET 	= newthunder
+TARGET 	= newgun
+
 
 
 all: $(LIBS) $(TARGET)
