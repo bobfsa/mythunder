@@ -33,6 +33,13 @@ int EIMDATA::init(int devfd, CFilesys_mgr * fs, boardctl *ctl)
 	detach();	
 }
 
+void EIMDATA::release()
+{
+	stop();
+	m_brunning = 0;
+	usleep(1000000);		
+}
+
 void *EIMDATA::sub_routine(void)
 {
 	size_t nbytes;

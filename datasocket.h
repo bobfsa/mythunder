@@ -27,6 +27,7 @@ public:
 
 	int init(int sockfd, int port,size_t size);
 	int init(const char *ipaddr, const char *port, struct event_base *m_evbase);
+	int init(int sockfd, struct event_base *evbase);
 	int restart();
 	int setcb(bufferevent_data_cb cb1, bufferevent_data_cb cb2, bufferevent_event_cb cb3);
 	int submit(char *buf, size_t size);

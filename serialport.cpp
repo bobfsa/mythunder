@@ -15,7 +15,7 @@ enum
 	gps_data,
 	gps_finish
 };
-int Serialport::init(char *devname, int mode, int speed, size_t size)
+int Serialport::init(const char *devname, int mode, int speed, size_t size)
 {
 	if(mode == 0)
 	{

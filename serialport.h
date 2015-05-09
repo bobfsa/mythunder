@@ -5,13 +5,24 @@
 #include "thread.h"
 #include "boardctl.h"
 
+
+typedef struct 
+{
+	char header[6];
+	char time[12];
+	char availabe[1];
+	char longitude[8];
+	char latitude[8];
+	char 	angle[8];
+}__attribute__((packed)) gps_packet;
+
 class Serialport:public Cthread
 {
 public:
 	Serialport():m_fd(-1),speed(0),m_brunning(0){};
 	~Serialport(){};
 
-	int init(char *name, int mode, int speed, size_t size);
+	int init(const char *name, int mode, int speed, size_t size);
 	void set_boardctl(boardctl *ctl);
 	size_t _read(char *buf, size_t size);
 	size_t _write(char *buf, size_t size);
