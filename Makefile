@@ -36,7 +36,7 @@ LOCAL_INCLUDE 	= 	\
 # local lib
 # =====================================================================================#
 LOCALE_LIB 	= 	\
-			-L$(LINUXLIBS_INSTALL_DIR)/lib -lpthread -levent
+			-L$(LINUXLIBS_INSTALL_DIR)/lib -lpthread -levent_core -levent_extra -levent_pthreads
 
 # =====================================================================================#
 # system toolchain
@@ -91,7 +91,8 @@ SOURCES 	= main.cpp 	\
 			filesysmgr.cpp \
 			eimdata.cpp \
 			util.cpp \
-			gunparse.cpp
+			gunparse.cpp \
+			datasocket.cpp
 
 
 # =====================================================================================#
