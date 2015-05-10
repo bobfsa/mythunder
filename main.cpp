@@ -5,12 +5,14 @@
 #include "filesysmgr.h"
 #include "eimdata.h"
 #include "boardctl.h"
-
+#include "gunparse.h"
+#include "arbi.h"
 
 
 
 Serialport *gpsport=NULL;
 DataSocket *g_datasock;
+arbi_socket *g_arbisock;
 CFilesys_mgr *g_datafs=NULL;
 EIMDATA *g_eimdata=NULL;
 
@@ -22,7 +24,7 @@ std::vector<DataSocket *> socklist;
 
 #define LOCAL_ADDR 0x0001
 
-
+#define SERVER_PORT 10218
 
 char *svr_ipaddr;
 unsigned int svr_port;
@@ -34,7 +36,7 @@ char senddata[SEND_UNIT*2];
 char buffdata[SEND_UNIT*2];
 
 void on_datasock_read(struct bufferevent *cb, void *ctx);
-void on_gpssock_write(struct bufferevent *cb, void *ctx);
+void on_datasock_write(struct bufferevent *cb, void *ctx);
 void on_socket_event(struct bufferevent *bev, short ev, void *ctx);
 void handle_timeout(int nSock, short sWhat, void * pArg);
 void set_socket_server_start(struct event_base *mybase);
@@ -112,6 +114,7 @@ void illegal_inst_handler(int sig)
 	return ;
 }
 
+int server_mode = 0;
 int main(int argc, char *argv[])
 {
 	int fd=0;
@@ -133,17 +136,18 @@ int main(int argc, char *argv[])
 	volatile int testdelay=0;
 	int bufflen=0;
 	int virgps=10101010;
-	int server_mode = 0;
 	
 
 	if(argc < 2)
 	{
-		printf("Usage: newgun [tty]\n example:./eimgps  /dev/ttymxc0 192.168.1.117 10001\n");
+		printf("Usage: newgun [tty]\n example:./eimgps  /dev/ttymxc0  -c 192.168.1.117 10001\n");
 		printf("Please specify DSP Port TTY\n");
 		return -1;
 	}
-	if(argc==3 && strcmp(argv[2], "-s") == 0)
+	if(strcmp(argv[2], "-s") == 0)
 		server_mode = 1;
+	else
+		server_mode = 0;
 
 
 	printf("You specify the Recv TTY %s \n", argv[1]);
@@ -151,27 +155,27 @@ int main(int argc, char *argv[])
 	nret=evthread_use_pthreads();	
 	printf("evthread_use_pthreads: %d\n", nret);
 	
-	gpsport = new Serialport();
-	if(gpsport->init(argv[1], 1, 9600, 1) != 0)
+	//gpsport = new Serialport();
+	//if(gpsport->init(argv[1], 1, 9600, 1) != 0)
 	{
-		printf("start dev tty failed\n");
-		delete gpsport;
-		return -1;
+	//	printf("start dev tty failed\n");
+	//	delete gpsport;
+	//	return -1;
 	}
 
 	
-	devfd=open("/dev/eimfpga",O_RDWR);	
-	if(devfd < 0)	
+	//devfd=open("/dev/eimfpga",O_RDWR);	
+	//if(devfd < 0)	
 	{		
-		printf("open EIM FPGA device failed\n");	
-		delete gpsport;
-		return -1;	
+	//	printf("open EIM FPGA device failed\n");	
+	//	delete gpsport;
+	//	return -1;	
 	}
 
 	
 
-	g_datafs=new CFilesys_mgr("/dev/sda1","/eim/data",0x80000000);//512GB
-	g_eimdata=new EIMDATA();
+	//g_datafs=new CFilesys_mgr("/dev/sda1","/eim/data",0x80000000);//512GB
+	//g_eimdata=new EIMDATA();
 
 
 
@@ -187,12 +191,18 @@ int main(int argc, char *argv[])
 	if(server_mode)
 	{
 		set_socket_server_start(my_evbase);
+		g_arbisock=new arbi_socket();
+		g_arbisock->init();
+		if(gpsport)
+			gpsport->set_DataSocket(g_arbisock);		
 	}
 	else
 	{
 		g_datasock=new DataSocket();
-		g_datasock->init(argv[2],argv[3], my_evbase);
+		g_datasock->init(argv[3],argv[4], my_evbase);
 		g_datasock->setcb(on_datasock_read, NULL, on_socket_event);
+		if(gpsport)
+			gpsport->set_DataSocket(g_datasock);
 	}
 
 
@@ -203,12 +213,12 @@ int main(int argc, char *argv[])
 	{
 		printf("create g_gpssock failed\n");		
 	}
-	g_gpssock->setcb(NULL, on_gpssock_write, on_socket_event);
+	g_gpssock->setcb(NULL, on_datasock_write, on_socket_event);
 #endif
 
 	nbytes=0;
 	//g_eimdata->init(devfd, g_datafs, g_datasock);	
-	g_eimdata->init(devfd, g_datafs, (boardctl *)NULL);
+	//g_eimdata->init(devfd, g_datafs, (boardctl *)NULL);
 
 	//gpsport->set_boardctl(g_myboard);
 
@@ -230,10 +240,22 @@ int main(int argc, char *argv[])
 
 void on_datasock_read(struct bufferevent *bev, void *ctx)
 {
-	printf("%s ---\n");
+	DataSocket *psock=(DataSocket *)ctx;
+	struct evbuffer *rxbuf=bufferevent_get_input(bev);
+	static GunResult t_res;
+	printf("%s ---\n", __func__);	
+	if(server_mode  && g_arbisock)
+	{
+		if(evbuffer_get_length(rxbuf) == sizeof(GunResult))
+		{
+			evbuffer_remove(rxbuf, &t_res, sizeof(GunResult));
+			g_arbisock->submit((char *)&t_res, sizeof(GunResult));
+			//evbuffer_add_buffer
+		}
+	}
 }
 
-void  on_gpssock_write(struct bufferevent *bev, void *ctx)
+void  on_datasock_write(struct bufferevent *bev, void *ctx)
 {
 
 }
@@ -262,7 +284,7 @@ void set_socket_server_start(struct event_base *mybase)
 
 	sin.sin_family = AF_INET;  
 	sin.sin_addr.s_addr = 0;  
-	sin.sin_port = htons(10023);  
+	sin.sin_port = htons(SERVER_PORT);  
 
 	listener = socket(AF_INET, SOCK_STREAM, 0);  
 	evutil_make_socket_nonblocking(listener);  
@@ -282,7 +304,6 @@ void set_socket_server_start(struct event_base *mybase)
 	}  
 
 	listener_event = event_new(mybase, listener, EV_READ|EV_PERSIST, do_accept, (void*)mybase);  
-	/*XXX check it */  
 	event_add(listener_event, NULL);  
 	
 	return ;
@@ -294,34 +315,33 @@ void handle_timeout(int nSock, short sWhat, void * pArg)
 
 void do_accept(evutil_socket_t listener, short event, void *arg)  
 {  
-    struct event_base *base = (struct event_base *)arg;  
-    struct sockaddr_storage ss;  
-    socklen_t slen = sizeof(ss);  
-	
-    int fd = accept(listener, (struct sockaddr*)&ss, &slen);  
-    if (fd < 0)  
-    {  
-        printf("accept error");  
-    }  
-    else if (fd > FD_SETSIZE)  
-    {  
-    	printf("%s fd > FD_SETSIZE\n");
-        close(fd);  
-    }  
-    else  
-    {  
-    	printf("accept new fd: %d\n", fd);
-		
-        struct bufferevent *bev;  
+	struct event_base *base = (struct event_base *)arg;  
+	struct sockaddr_storage ss;  
+	socklen_t slen = sizeof(ss);  
 
-	//DataSocket *g_tmpsock=new DataSocket();
-	DataSocket *t_clientsock=new DataSocket();
-        evutil_make_socket_nonblocking(fd);  
-		
-	t_clientsock->init(fd, base);
-	t_clientsock->setcb(on_datasock_read, NULL, on_socket_event);
+	int fd = accept(listener, (struct sockaddr*)&ss, &slen);  
+	if (fd < 0)  
+	{  
+		printf("accept error");  
+	}  
+	else if (fd > FD_SETSIZE)  
+	{  
+		printf("%s fd > FD_SETSIZE\n");
+		close(fd);  
+	}  
+	else  
+	{  
+		printf("accept new fd: %d\n", fd);
 
-	socklist.push_back(t_clientsock);
-    }  
+		struct bufferevent *bev;  
+		
+		DataSocket *t_clientsock=new DataSocket();
+		evutil_make_socket_nonblocking(fd);  
+
+		t_clientsock->init(fd, base);
+		t_clientsock->setcb(on_datasock_read, NULL, on_socket_event);
+
+		socklist.push_back(t_clientsock);
+	}  
 }  
 

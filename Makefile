@@ -92,7 +92,8 @@ SOURCES 	= main.cpp 	\
 			eimdata.cpp \
 			util.cpp \
 			gunparse.cpp \
-			datasocket.cpp
+			datasocket.cpp \
+			arbi.cpp
 
 
 # =====================================================================================#

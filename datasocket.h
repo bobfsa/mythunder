@@ -36,10 +36,11 @@ public:
 
 	void *sub_routine(void);
 	int m_sockfd;
-
+	int	m_brunning;
+	
 private:
 	int m_port;
-	int	m_brunning;
+	
 	int m_msgsize;
 	std::queue<dataitem *>	m_msgqueue;
 	cmutex msg_mutex;

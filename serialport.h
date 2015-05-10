@@ -24,6 +24,7 @@ public:
 
 	int init(const char *name, int mode, int speed, size_t size);
 	void set_boardctl(boardctl *ctl);
+	void set_DataSocket(DataSocket *ctl);
 	size_t _read(char *buf, size_t size);
 	size_t _write(char *buf, size_t size);
 	size_t _read_block(char *buf, size_t size);		
@@ -41,6 +42,7 @@ private:
 	std::queue<char *>	m_msgqueue;
 	cmutex msg_mutex;
 	boardctl *m_board;
+	DataSocket *m_sock;
 };
 
 #endif

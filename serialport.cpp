@@ -127,6 +127,8 @@ int Serialport::init(const char *devname, int mode, int speed, size_t size)
 
 		usleep(200000L); /* Wait a bit (DTR raise) */	
 	}
+
+	m_sock=NULL;
 	
 	m_brunning = 1;
 	m_msgsize=size;
@@ -180,6 +182,11 @@ size_t Serialport::_read_block(char * buf, size_t size)
 		usleep(2000);
 	}
 	return index;
+}
+
+void Serialport::set_DataSocket(DataSocket * datasock)
+{
+	m_sock=datasock;
 }
 
 
@@ -424,6 +431,9 @@ void *Serialport::sub_routine(void)
 		{
 			printf("get nothing result\n");
 		}
+
+		if(m_sock)
+			m_sock->submit((char *)&t_gunresult, sizeof(GunResult));
 		
 		cnt=0;
 	}
