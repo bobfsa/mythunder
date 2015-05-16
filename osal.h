@@ -17,6 +17,8 @@
 #include <string>
 #include <cstdio>
 #include <queue>
+#include <vector>
+#include <list>
 #include <semaphore.h>
  #include <sys/types.h>
  #include <sys/socket.h>

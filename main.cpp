@@ -17,7 +17,7 @@ temperdev *g_hidtemp=NULL;
 EIMDATA *g_eimdata=NULL;
 boardctl *g_myboard=NULL;
 FILE *fplog=NULL;
-
+std::vector<DataSocket *>socklist;
 
 
 
@@ -38,6 +38,8 @@ void on_datasock_read(struct bufferevent *cb, void *ctx);
 void on_sock_write(struct bufferevent *cb, void *ctx);
 void on_socket_event(struct bufferevent *bev, short ev, void *ctx);
 void handle_timeout(int nSock, short sWhat, void * pArg);
+void set_socket_server_start(struct event_base *mybase);
+void do_accept(evutil_socket_t listener, short event, void *arg);
 
 struct event_base *my_evbase;
 
@@ -132,26 +134,29 @@ int main(int argc, char *argv[])
 	volatile int testdelay=0;
 	int bufflen=0;
 	int virgps=10101010;
-
+	int server_mode = 0;
 	
 
 	if(argc < 3)
 	{
-		printf("Usage: %s [ipaddr] [dataport]\n example:%s 192.168.1.1 8001 \n",argv[0], argv[0]);
+		printf("Usage: %s [ipaddr] [dataport]\n example:%s  -[c/s] 192.168.1.1 8001 \n",argv[0], argv[0]);
 		printf("Please specify IP addr and Port\n");
 		return -1;
 	}
 	fplog=fopen("thunderlog.txt","w+");
 	assert(fplog);
 	printf("fplog: 0x%x \n",fplog);
-	fprintf(fplog,"now, new %s %s %s start\n", argv[0],argv[1],argv[2]);
+	fprintf(fplog,"now, new %s %s %s start\n", argv[0],argv[1],argv[2], argv[3]);
 	fflush(fplog);
 
 	
 	nret=evthread_use_pthreads();
 	printf("evthread_use_pthreads: %d\n", nret);
 
-	//printf("You specify the Recv TTY %s \n", argv[4]);
+	if(strcmp(argv[1], "-s") == 0)
+		server_mode=1;
+	else
+		server_mode=0;
 
 	gpsport = new Serialport();
 	if(gpsport->init("/dev/ttymxc0", 1, 115200, 1) != 0)
@@ -185,8 +190,8 @@ int main(int argc, char *argv[])
 	signal(SIGQUIT, illegal_inst_handler);
 	signal(SIGHUP, illegal_inst_handler);
 	
-	svr_ipaddr=argv[1];
-	svr_port=atoi(argv[2]);
+	svr_ipaddr=argv[2];
+	svr_port=atoi(argv[3]);
 	//gps_port=atoi(argv[3]);
 	times=0;	
 	cnt=0;
@@ -196,11 +201,16 @@ int main(int argc, char *argv[])
 	
 	my_evbase=event_base_new();
 
-
-
-	g_datasock=new DataSocket();
-	g_datasock->init(argv[1],argv[2], my_evbase);
-	g_datasock->setcb(on_datasock_read, on_sock_write, on_socket_event);
+	if(server_mode)
+	{
+		set_socket_server_start(my_evbase);
+	}
+	else
+	{
+		g_datasock=new DataSocket();
+		g_datasock->init(argv[2],argv[3], my_evbase);
+		g_datasock->setcb(on_datasock_read, on_sock_write, on_socket_event);
+	}
 
 #if 0
 	g_gpssock=new DataSocket();
@@ -299,4 +309,69 @@ void handle_timeout(int nSock, short sWhat, void * pArg)
 	}
 }
 
+void set_socket_server_start(struct event_base *mybase)
+{
+	evutil_socket_t listener;  
+	struct sockaddr_in sin;  
+	struct event *listener_event;  
 
+	sin.sin_family = AF_INET;  
+	sin.sin_addr.s_addr = 0;  
+	sin.sin_port = htons(10023);  
+
+	listener = socket(AF_INET, SOCK_STREAM, 0);  
+	evutil_make_socket_nonblocking(listener);  
+
+	int one = 1;  
+	setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(one));  
+
+	if (bind(listener, (struct sockaddr*)&sin, sizeof(sin)) < 0)  
+	{  
+		printf("bind error\n");  
+		return;  
+	}  
+	if (listen(listener, 16)<0)  
+	{  
+		printf("listen error\n");  
+		return;  
+	}  
+
+	listener_event = event_new(mybase, listener, EV_READ|EV_PERSIST, do_accept, (void*)mybase);  
+	/*XXX check it */  
+	event_add(listener_event, NULL);  
+	
+	return ;
+}
+
+void do_accept(evutil_socket_t listener, short event, void *arg)  
+{  
+    struct event_base *base = (struct event_base *)arg;  
+    struct sockaddr_storage ss;  
+    socklen_t slen = sizeof(ss);  
+	
+    int fd = accept(listener, (struct sockaddr*)&ss, &slen);  
+    if (fd < 0)  
+    {  
+        printf("accept error");  
+    }  
+    else if (fd > FD_SETSIZE)  
+    {  
+    	printf("%s fd > FD_SETSIZE\n");
+        close(fd);  
+    }  
+    else  
+    {  
+    	printf("accept new fd: %d\n", fd);
+		
+        struct bufferevent *bev;  
+
+	//DataSocket *g_tmpsock=new DataSocket();
+	DataSocket *t_clientsock=new DataSocket();
+        evutil_make_socket_nonblocking(fd);  
+		
+	t_clientsock->init(fd, base);
+	t_clientsock->setcb(on_datasock_read, NULL, on_socket_event);
+
+	socklist.push_back(t_clientsock);
+    }  
+}  
