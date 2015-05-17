@@ -17,8 +17,9 @@ temperdev *g_hidtemp=NULL;
 EIMDATA *g_eimdata=NULL;
 boardctl *g_myboard=NULL;
 FILE *fplog=NULL;
-std::vector<DataSocket *>socklist;
+std::list<DataSocket *>socklist;
 int server_mode = 0;
+cmutex sockmutex;
 
 
 #define LOCAL_ADDR 0x0001
@@ -271,7 +272,7 @@ void  on_sock_write(struct bufferevent *bev, void *ctx)
 void on_socket_event(struct bufferevent *bev, short ev, void *ctx)
 {
 	DataSocket *psock=(DataSocket *)ctx;	
-	printf("%s sock:0x%x event:0x%x\n", __func__, psock, ev);
+	//printf("%s sock:0x%x event:0x%x\n", __func__, psock, ev);
 	if (ev & (BEV_EVENT_ERROR|BEV_EVENT_EOF)) 
 	{
 		printf("%s socket event: 0x%x\n", __func__, ev);
@@ -292,13 +293,32 @@ void on_socket_event(struct bufferevent *bev, short ev, void *ctx)
 
 void handle_timeout(int nSock, short sWhat, void * pArg)
 {
+	DataSocket *psock;
 	printf("handle_timeout #############\r\n");
-	if(g_datasock && g_datasock->get_status() == sock_uninit)
+	printf("g_datasock 0x%x status:0x%x\n", g_datasock, ((!g_datasock)?0:g_datasock->get_status()));
+	if(g_datasock && (g_datasock->get_status() != sock_dataing))
 	{
 		if(server_mode )
 		{
+			printf("start change data_sock\n");
+			g_myboard->set_data_sock(NULL);
+			
+			sockmutex.lock();
+			psock = socklist.front();
+			printf("front: 0x%x datasock:0x%x\n", psock, g_datasock);
 			delete g_datasock;
 			g_datasock=NULL;
+			socklist.pop_front();
+
+			printf("list size: 0x%x\n", socklist.size());
+			
+			if(!socklist.empty())
+			{
+				psock = socklist.front();
+				g_datasock=psock;
+				g_myboard->set_data_sock(psock); 
+			}
+			sockmutex.unlock();
 		}
 		else
 		{
@@ -365,7 +385,7 @@ void do_accept(evutil_socket_t listener, short event, void *arg)
     }  
     else if (fd > FD_SETSIZE)  
     {  
-    	printf("%s fd > FD_SETSIZE\n");
+    	printf("%s fd > FD_SETSIZE\n",__func__);
         close(fd);  
     }  
     else  
@@ -376,14 +396,22 @@ void do_accept(evutil_socket_t listener, short event, void *arg)
 
 		//DataSocket *g_tmpsock=new DataSocket();
 		DataSocket *t_clientsock=new DataSocket();
-        evutil_make_socket_nonblocking(fd);  
+		printf("new DataSocket: 0x%x\n", t_clientsock);
+       		evutil_make_socket_nonblocking(fd);  
 		
 		t_clientsock->init(fd, base);
 		t_clientsock->setcb(on_datasock_read, on_sock_write, on_socket_event);
 
+		sockmutex.lock();
 		socklist.push_back(t_clientsock);
-
-		g_datasock=t_clientsock;
-		g_myboard->init(g_datasock);
+		printf("list size: 0x%x\n", socklist.size());
+		if(socklist.size() == 1)
+		{
+			g_datasock=t_clientsock;
+			g_myboard->set_data_sock(g_datasock);
+		}
+		sockmutex.unlock();
     }  
 }  
+
+

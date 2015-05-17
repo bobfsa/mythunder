@@ -77,7 +77,7 @@ boardctl::~boardctl()
 }
 
 void boardctl::init(DataSocket * outsock)
-{
+{	
 	m_brunning=1;
 	m_upsock=outsock;
 	start();
@@ -180,7 +180,7 @@ void *boardctl::sub_routine(void)
 		}
 		else
 		{
-			printf("m_rxevbuf len: %d\n", evbuffer_get_length(m_rxevbuf));
+			//printf("m_rxevbuf len: %d\n", evbuffer_get_length(m_rxevbuf));
 			 continue ;
 		}
 
@@ -192,7 +192,7 @@ void *boardctl::sub_routine(void)
 		memcpy(repdata->gps_location, m_location, sizeof(m_location));
 		memcpy(repdata->yaw_angle, m_angle, sizeof(m_angle));
 		
-		printf("board ctl  can send one pkt: %d\n",  cnt);
+		printf("can send one pkt: %d\r\n",  cnt);
 		cnt++;
 		if(m_upsock)
 		{
