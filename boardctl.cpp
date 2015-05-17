@@ -84,6 +84,11 @@ void boardctl::init(DataSocket * outsock)
 	detach();	
 }
 
+void boardctl::set_data_sock(DataSocket *outsock)
+{
+	m_upsock=outsock;
+}
+
 
 void boardctl::submit(void *buf, size_t size)
 {
@@ -119,7 +124,7 @@ void boardctl::submit_valid_locate(void * data, size_t len)
 }
 	
 void host_request_proc(boardctl *pboardctl, char  *data)
-{
+{
 	hostreq_msg *msg=(hostreq_msg *)data;
 	static targetreply_msg replymsg;
 	
@@ -167,7 +172,7 @@ void *boardctl::sub_routine(void)
 	while(m_brunning)
 	{
 		//printf("board ctl %s start\n", __func__);
-		usleep(500000);
+		usleep(800000);
 
 		if(evbuffer_get_length(m_rxevbuf) >= DATA_PALOAD_LEN)
 		{

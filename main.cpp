@@ -18,7 +18,7 @@ EIMDATA *g_eimdata=NULL;
 boardctl *g_myboard=NULL;
 FILE *fplog=NULL;
 std::vector<DataSocket *>socklist;
-
+int server_mode = 0;
 
 
 #define LOCAL_ADDR 0x0001
@@ -38,7 +38,7 @@ void on_datasock_read(struct bufferevent *cb, void *ctx);
 void on_sock_write(struct bufferevent *cb, void *ctx);
 void on_socket_event(struct bufferevent *bev, short ev, void *ctx);
 void handle_timeout(int nSock, short sWhat, void * pArg);
-void set_socket_server_start(struct event_base *mybase);
+void set_socket_server_start(struct event_base *mybase, int port);
 void do_accept(evutil_socket_t listener, short event, void *arg);
 
 struct event_base *my_evbase;
@@ -134,9 +134,10 @@ int main(int argc, char *argv[])
 	volatile int testdelay=0;
 	int bufflen=0;
 	int virgps=10101010;
-	int server_mode = 0;
+	//int server_mode = 0;
 	
 
+	//if((argc == 2 && strcmp(argv[1],"-s")) 
 	if(argc < 3)
 	{
 		printf("Usage: %s [ipaddr] [dataport]\n example:%s  -[c/s] 192.168.1.1 8001 \n",argv[0], argv[0]);
@@ -190,8 +191,8 @@ int main(int argc, char *argv[])
 	signal(SIGQUIT, illegal_inst_handler);
 	signal(SIGHUP, illegal_inst_handler);
 	
-	svr_ipaddr=argv[2];
-	svr_port=atoi(argv[3]);
+	//svr_ipaddr=argv[2];
+	//svr_port=atoi(argv[3]);
 	//gps_port=atoi(argv[3]);
 	times=0;	
 	cnt=0;
@@ -203,7 +204,9 @@ int main(int argc, char *argv[])
 
 	if(server_mode)
 	{
-		set_socket_server_start(my_evbase);
+		int port=atoi(argv[2]);
+		printf("You specify server listen on  port: %d\n", port);
+		set_socket_server_start(my_evbase, port);
 	}
 	else
 	{
@@ -227,7 +230,7 @@ int main(int argc, char *argv[])
 
 	gpsport->set_boardctl(g_myboard);
 
-	g_myboard->init(g_datasock);
+	g_myboard->init(NULL);
 	
 	event_assign(&evTimeout, my_evbase, -1, EV_PERSIST, handle_timeout, NULL);
 	 evtimer_add(&evTimeout, &tTimeout);
@@ -290,26 +293,32 @@ void on_socket_event(struct bufferevent *bev, short ev, void *ctx)
 void handle_timeout(int nSock, short sWhat, void * pArg)
 {
 	printf("handle_timeout #############\r\n");
-	if(g_datasock->get_status() == sock_uninit)
+	if(g_datasock && g_datasock->get_status() == sock_uninit)
 	{
-		if(g_datasock->restart() == 0)
+		if(server_mode )
 		{
-			g_datasock->setcb(on_datasock_read, on_sock_write, on_socket_event);
+			delete g_datasock;
+			g_datasock=NULL;
+		}
+		else
+		{
+			if(g_datasock->restart() == 0)
+			{
+				g_datasock->setcb(on_datasock_read, on_sock_write, on_socket_event);
+			}
 		}
 	}
 	if(g_gpssock)
 	{
 		if(g_gpssock->get_status() == sock_uninit)
 		{
-			if(g_gpssock->restart() == 0)
-			{
+			if(g_gpssock->restart() == 0) 
 				g_gpssock->setcb(NULL, on_sock_write, on_socket_event);
-			}
 		}
 	}
 }
 
-void set_socket_server_start(struct event_base *mybase)
+void set_socket_server_start(struct event_base *mybase, int port)
 {
 	evutil_socket_t listener;  
 	struct sockaddr_in sin;  
@@ -317,7 +326,7 @@ void set_socket_server_start(struct event_base *mybase)
 
 	sin.sin_family = AF_INET;  
 	sin.sin_addr.s_addr = 0;  
-	sin.sin_port = htons(10023);  
+	sin.sin_port = htons(port);  
 
 	listener = socket(AF_INET, SOCK_STREAM, 0);  
 	evutil_make_socket_nonblocking(listener);  
@@ -365,13 +374,16 @@ void do_accept(evutil_socket_t listener, short event, void *arg)
 		
         struct bufferevent *bev;  
 
-	//DataSocket *g_tmpsock=new DataSocket();
-	DataSocket *t_clientsock=new DataSocket();
+		//DataSocket *g_tmpsock=new DataSocket();
+		DataSocket *t_clientsock=new DataSocket();
         evutil_make_socket_nonblocking(fd);  
 		
-	t_clientsock->init(fd, base);
-	t_clientsock->setcb(on_datasock_read, NULL, on_socket_event);
+		t_clientsock->init(fd, base);
+		t_clientsock->setcb(on_datasock_read, on_sock_write, on_socket_event);
 
-	socklist.push_back(t_clientsock);
+		socklist.push_back(t_clientsock);
+
+		g_datasock=t_clientsock;
+		g_myboard->init(g_datasock);
     }  
 }  

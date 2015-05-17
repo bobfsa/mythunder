@@ -53,6 +53,7 @@ public:
 	~boardctl();
 
 	void init(DataSocket *outsock);
+	void set_data_sock(DataSocket *outsock);
 	void submit(void *buf, size_t size);
 	void 	submit_tempature(void * data, size_t len);
 	void submit_gpstime(void * data, size_t len);
