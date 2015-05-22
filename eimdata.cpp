@@ -50,6 +50,8 @@ void *EIMDATA::sub_routine(void)
 	int first_frame=0;
 	short *pdata;
 	int index=0;
+	u32 idle_cnt=0;
+	u32 test_cnt=0;
 	
 	while(m_brunning)			
 	{				
@@ -60,8 +62,22 @@ void *EIMDATA::sub_routine(void)
 		
 		if(nbytes == 0)
 		{
-			usleep(10000);			
+			usleep(5000);			
+			idle_cnt++;
+			if(idle_cnt > 800)
+			{
+				write(m_devfd, readdata, 1);
+				idle_cnt = 0;
+			}
 			continue ;
+		}
+
+		idle_cnt = 0;
+		test_cnt++;
+		if(test_cnt >= 0x10000)
+		{
+			write(m_devfd, readdata, 1);
+			test_cnt=0;
 		}
 		index=0;
 		if(first_frame == 0)
@@ -91,7 +107,7 @@ void *EIMDATA::sub_routine(void)
 			m_outctl->submit(readdata, nbytes-(index*2));
 	}	
 
-	printf("EIM %s exit\n", __func__);
+	//printf("EIM %s exit\n", __func__);
 }
 
 
