@@ -3,8 +3,8 @@
 #include "datasocket.h"
 #include "hidtemp.h"
 #include "filesysmgr.h"
-#include "eimdata.h"
 #include "boardctl.h"
+#include "eimdata.h"
 
 #if 0
 void thunderctl_proc(thunderctl_msg *pctlmsg, int m_sockfd)
@@ -64,6 +64,7 @@ boardctl::boardctl()
 {
 	int ret;
 	m_brunning=0;
+	m_upsock=NULL;
 	m_rxevbuf=evbuffer_new();
 	if(!m_rxevbuf)
 		printf("%s new evbuffer failed\n", __func__);
@@ -87,6 +88,11 @@ void boardctl::init(DataSocket * outsock)
 void boardctl::set_data_sock(DataSocket *outsock)
 {
 	m_upsock=outsock;
+}
+
+void  boardctl::set_data_interface(EIMDATA * inf)
+{
+	m_eiminf=inf;
 }
 
 
@@ -167,6 +173,7 @@ void *boardctl::sub_routine(void)
 {
 	targetreply_data *repdata=new targetreply_data;
 	static int  cnt=0;
+	int pre_sock_NULL=1;
 
 	//printf("board ctl %s start\n",__func__);
 	while(m_brunning)
@@ -182,6 +189,18 @@ void *boardctl::sub_routine(void)
 		{
 			//printf("m_rxevbuf len: %d\n", evbuffer_get_length(m_rxevbuf));
 			 continue ;
+		}
+
+		if(m_upsock && pre_sock_NULL)
+		{
+			printf("board upsock ready!\n");
+			m_eiminf->set_search_header();
+			pre_sock_NULL=0;			
+		}
+		else if(!m_upsock)
+		{
+			//printf("board upsock not ready!\n");
+			pre_sock_NULL=1;
 		}
 
 		repdata->msg_hdr=TARGET_REQ_DATA;

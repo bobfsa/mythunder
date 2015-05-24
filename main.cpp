@@ -232,6 +232,7 @@ int main(int argc, char *argv[])
 	gpsport->set_boardctl(g_myboard);
 
 	g_myboard->init(NULL);
+	g_myboard->set_data_interface(g_eimdata);
 	
 	event_assign(&evTimeout, my_evbase, -1, EV_PERSIST, handle_timeout, NULL);
 	 evtimer_add(&evTimeout, &tTimeout);

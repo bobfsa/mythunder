@@ -45,6 +45,7 @@ typedef struct
 
 
 
+class EIMDATA;
 
 class boardctl:public Cthread
 {
@@ -54,6 +55,7 @@ public:
 
 	void init(DataSocket *outsock);
 	void set_data_sock(DataSocket *outsock);
+	void set_data_interface(EIMDATA *inf);
 	void submit(void *buf, size_t size);
 	void 	submit_tempature(void * data, size_t len);
 	void submit_gpstime(void * data, size_t len);
@@ -66,6 +68,7 @@ public:
 public:
 	DataSocket *m_upsock;
 	DataSocket *m_downsock;
+	EIMDATA *m_eiminf;
 
 	struct evbuffer *m_rxevbuf;
 	

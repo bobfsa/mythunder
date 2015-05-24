@@ -20,6 +20,7 @@ public:
 	int init(int devfd, int sockfd, CFilesys_mgr *fs);
 	int add_outfd(int fd);
 	int get_status();
+	void  set_search_header();
 	void release();
 
 	void *sub_routine(void);
@@ -34,8 +35,9 @@ private:
 	DataSocket *m_sock;
 	boardctl *m_outctl;
 	int sockfd;
+	int m_first_searched;
+	cmutex search_mutex;
 };
 
-
-
 #endif
+
