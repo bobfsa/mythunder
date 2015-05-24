@@ -7,6 +7,10 @@
 #include "boardctl.h"
 #include "filesysmgr.h"
 
+#define EIMUNIT_LEN 15600
+#define EIMUNIT_HEADER 	0x5A5B
+#define EIMUNIT_HDRLEN	0x0034
+
 class EIMDATA:public Cthread
 {
 public:

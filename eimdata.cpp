@@ -3,9 +3,7 @@
 #include "eimdata.h"
 
 
-#define EIMUNIT_LEN 15600
-#define EIMUNIT_HEADER 	0x5A5B
-#define EIMUNIT_HDRLEN	0x0034
+
 
 static char readdata[EIMUNIT_LEN*2];
 
@@ -85,26 +83,6 @@ void *EIMDATA::sub_routine(void)
 		}
 
 		idle_cnt = 0;
-		//test_cnt++;
-		//if(test_cnt >= 0x1000)
-		{
-		//	write(m_devfd, readdata, 1);
-		//	test_cnt=0;
-		}
-		//else if(test_cnt % 0x100 == 0)
-		//:x	printf("testcnt 256..\n");
-#if 0
-		if(m_outctl && pre_sock_NULL)
-		{
-			first_frame=0;
-			pre_sock_NULL=0;
-		}
-		else if(!m_outctl)
-		{
-			pre_sock_NULL=1;
-			continue ;
-		}
-#endif
 		index=0;
 		if(m_first_searched == 0)
 		{
@@ -114,9 +92,7 @@ void *EIMDATA::sub_routine(void)
 			{
 				if(*pdata == EIMUNIT_HEADER && *(pdata+1)==EIMUNIT_HDRLEN)
 				{		
-					search_mutex.lock();
 					m_first_searched=1;
-					search_mutex.unlock();
 					break;
 				}
 				pdata++;
@@ -131,7 +107,7 @@ void *EIMDATA::sub_routine(void)
 		//if(m_sock)
 		//	m_sock->submit(readdata, nbytes);
 		if(m_outctl)
-			m_outctl->submit(readdata, nbytes-(index*2));
+			m_outctl->submit(&(readdata[index*2]), nbytes-(index*2));
 	}	
 
 	//printf("EIM %s exit\n", __func__);

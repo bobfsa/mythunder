@@ -174,34 +174,90 @@ void *boardctl::sub_routine(void)
 	targetreply_data *repdata=new targetreply_data;
 	static int  cnt=0;
 	int pre_sock_NULL=1;
+	int first_frame=0;
+	short *pdata=NULL;
+	int index=0;
+	unsigned long caplen,buflen;
 
-	//printf("board ctl %s start\n",__func__);
+	caplen=0;
 	while(m_brunning)
 	{
-		//printf("board ctl %s start\n", __func__);
-		usleep(800000);
-
-		if(evbuffer_get_length(m_rxevbuf) >= DATA_PALOAD_LEN)
+		usleep(500000);
+		
+		if(m_upsock && pre_sock_NULL)
 		{
-			evbuffer_remove( m_rxevbuf,  repdata->capdata, DATA_PALOAD_LEN);
+			caplen=evbuffer_get_length(m_rxevbuf);
+			if(caplen)
+			{
+				char *tmpdata=new char[EIMUNIT_HDRLEN];
+
+				evbuffer_remove(m_rxevbuf,  tmpdata, EIMUNIT_HDRLEN);
+				caplen=EIMUNIT_HDRLEN;
+				pdata=(short *)tmpdata;
+				index=0;
+				do
+				{
+					if(*pdata == EIMUNIT_HEADER && *(pdata+1)==EIMUNIT_HDRLEN)
+					{		
+						break;
+					}
+					pdata++;
+					index++;
+				}while((index*2)<caplen);
+				
+				caplen-=(index*2);
+				if(caplen > 0 )
+				{
+					memcpy(repdata->capdata, tmpdata+(index*2), caplen);	
+				}
+
+
+				delete []tmpdata;
+			}
+			
+			printf("board upsock ready!\n");		
+			pre_sock_NULL=0;		
+			
+			//printf("cap: %d index:%d\n", caplen, index);
+			
+			//if(caplen == 0) //for search again
+			//	pre_sock_NULL=1;
+		}
+		else if(m_upsock && (pre_sock_NULL == 0))
+		{
+		}
+		else if(!m_upsock)
+		{
+			caplen=0;
+			pre_sock_NULL=1;
+		}
+
+#if 0
+		if(evbuffer_get_length(m_rxevbuf) >= (DATA_PALOAD_LEN-resilen))
+		{
+			evbuffer_remove( m_rxevbuf,  &repdata->capdata[resilen], DATA_PALOAD_LEN-resilen);
+			resilen=0;
 		}
 		else
 		{
 			//printf("m_rxevbuf len: %d\n", evbuffer_get_length(m_rxevbuf));
 			 continue ;
 		}
+#endif
 
-		if(m_upsock && pre_sock_NULL)
+		buflen=evbuffer_get_length(m_rxevbuf);
+		if( (buflen+caplen) >= DATA_PALOAD_LEN)
 		{
-			printf("board upsock ready!\n");
-			m_eiminf->set_search_header();
-			pre_sock_NULL=0;			
+			evbuffer_remove( m_rxevbuf,  &repdata->capdata[caplen], DATA_PALOAD_LEN-caplen);
+			caplen=0;
 		}
-		else if(!m_upsock)
-		{
-			//printf("board upsock not ready!\n");
-			pre_sock_NULL=1;
+		else
+		{			
+			evbuffer_remove(m_rxevbuf,  &repdata->capdata[caplen], buflen);
+			caplen+=buflen;
+			continue ;
 		}
+
 
 		repdata->msg_hdr=TARGET_REQ_DATA;
 		repdata->msg_type=msg_datapacket;
