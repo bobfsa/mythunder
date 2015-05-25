@@ -15,11 +15,13 @@ public:
 	void init();
 	void submit(char *data, size_t len);
 	void *sub_routine(void);
+	void update_client_num(int add);
 	
 private:
 	std::vector<DataSocket *> m_arbivec;
 	struct evbuffer *m_rxbuf;
 	cmutex vecmutex;
+	int m_client_num;
 };
 
 

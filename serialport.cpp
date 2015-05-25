@@ -39,7 +39,6 @@ int Serialport::init(const char *devname, int mode, int speed, size_t size)
 		}
 		if (!S_ISCHR(myStatBuf.st_mode))
 		{
-		      //Popup::Critical(QObject::tr("SECURITY ERROR: You are trying to open something that is not a character device\n" APPNAME " will close now."));
 		      printf("SECURITY ERROR: You are trying to open something that is not a character device\n");
 		      return -1;
 		}
@@ -293,7 +292,7 @@ void *Serialport::sub_routine(void)
 
 
 		if(strncmp((const char *)gpsdata, tgtGPS, strlen(tgtGPS)) != 0)
-		{			
+		{			
 		}
 		else
 		{
@@ -392,7 +391,7 @@ void *Serialport::sub_routine(void)
 				*pdata++=buf[head_index];
 				cnt ++;
 				if(cnt == sizeof(GunResult))
-				{
+				{
 					dsp_state=dsp_finish;
 					cnt=0;	
 					//printf(" Packet end dsp_finish\n");

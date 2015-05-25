@@ -78,7 +78,7 @@ void *gunparse::sub_routine(void)
 
 
 		if(strncmp((const char *)gpsdata, tgtGPS, strlen(tgtGPS)) != 0)
-		{			
+		{			
 		}
 		else
 		{
