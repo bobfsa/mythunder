@@ -76,6 +76,7 @@ void *arbi_socket::sub_routine(void)
 
 		}
 
+		newresult = 0;
 		rxnum=reslist.size();
 		std::vector<GunResult>::iterator myiter;
 		for(myiter=reslist.begin();myiter!=reslist.end();myiter++)
@@ -84,6 +85,7 @@ void *arbi_socket::sub_routine(void)
 			//printf("re:0x%x\n", *myiter.gxxx);
 		}
 
+		newresult = 1;
 		printf("get something result\n");
 			
 	}	
