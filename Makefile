@@ -41,16 +41,16 @@ LOCALE_LIB 	= 	\
 # =====================================================================================#
 # system toolchain
 # =====================================================================================#
-GCC_C_FLAGS 	= $(C_FLAGS) -Wall  -O0 $(SYS_INCLUDE) $(LOCAL_INCLUDE)
+GCC_C_FLAGS 	= $(C_FLAGS) -Wall -g -O0 $(SYS_INCLUDE) $(LOCAL_INCLUDE)
 GCC_COMPILE.c 	= $(CROSS_COMPILE)armv7l-timesys-linux-gnueabi-g++ 
 
 export $(GCC_C_FLAGS) $(GCC_COMPILE.c)
 
 GCC_LD_FLAGS	= $(LD_FLAGS) $(SYS_LIB)
 
-GCC_CXX_FLAGS 	= $(C_FLAGS) -Wall -O0 $(SYS_INCLUDE) $(LOCAL_INCLUDE) -DDSPGUN -fno-strict-aliasing
+GCC_CXX_FLAGS 	= $(C_FLAGS) -Wall -g -O0 $(SYS_INCLUDE) $(LOCAL_INCLUDE) -DDSPGUN -fno-strict-aliasing
 #GCC_CXX_FLAGS 	= $(C_FLAGS) -Wall -Werror $(SYS_INCLUDE)
-GCC_COMPILE.cxx	= $(CROSS_COMPILE)armv7l-timesys-linux-gnueabi-g++ -c $(GCC_CXX_FLAGS) $(GCC_CPP_FLAGS) -o $@ $<
+GCC_COMPILE.cxx	= $(CROSS_COMPILE)armv7l-timesys-linux-gnueabi-g++ -c $(GCC_CXX_FLAGS)  -o $@ $<
 GCC_LINK.cxx	= $(CROSS_COMPILE)armv7l-timesys-linux-gnueabi-g++  -o $@ $^ $(GCC_LD_FLAGS) $(LOCALE_LIB)
 
 GCC_STRIP 	= $(CROSS_COMPILE)armv7l-timesys-linux-gnueabi-strip
@@ -151,30 +151,6 @@ $(TARGET): $(OBJFILES)
 # =====================================================================================#
 # iconv lib compile
 # =====================================================================================#
-iconv:
-	@(cd libiconv; 	\
-	if [ ! -e  .configured ]; then 	\
-		./configure 	\
-			CC="$(GCC_COMPILE.c)" 	\
-			CFLAGS="$(GCC_C_FLAGS)" 	\
-			LDFLAGS="$(GCC_LD_FLAGS)" 	\
-			--build=i686-pc-linux-gnu 	\
-			--host=arm-none-linux-gnueabi 	\
-			--target=arm-none-linux-gnueabi 	\
-			--enable-shared=no	\
-			--enable-static=yes	\
-			--disable-rpath 	\
-			--disable-nls 	\
-			--prefix=$(LINUXLIBS_INSTALL_DIR); 	\
-		touch .configured; 	\
-	fi; 	\
-	if [ ! -e  .compiled ]; then 	\
-		make; 	\
-		touch .compiled; 	\
-	fi; 	\
-	cd -)
-
-# =====================================================================================#
 # compile rule
 # =====================================================================================#
 .cpp.o:
@@ -200,10 +176,6 @@ clean:
 
 distclean:
 	$(MAKE) -C speex clean
-	$(MAKE) -C libiconv clean
-	$(MAKE) -C libiconv distclean
-	rm -rf libiconv/.configured
-	rm -rf libiconv/.compiled
 	rm -rf speex/.compiled
 
 # =====================================================================================#

@@ -276,9 +276,9 @@ void on_socket_event(struct bufferevent *bev, short ev, void *ctx)
 	//printf("%s sock:0x%x event:0x%x\n", __func__, psock, ev);
 	if (ev & (BEV_EVENT_ERROR|BEV_EVENT_EOF)) 
 	{
-		printf("%s socket event: 0x%x\n", __func__, ev);
-
-		psock->release();		
+		printf("%s socket event: 0x%x sock:0x%x\n", __func__, ev, psock);
+		if(psock)
+			psock->release();		
 	}
 	if(ev & BEV_EVENT_CONNECTED)
 	{
