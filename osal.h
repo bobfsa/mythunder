@@ -45,8 +45,6 @@ typedef unsigned char u8;
 
 #define BUF_LEN 0x200
 
-
-
 extern void get_time(char *date, char *time);
 
 #define ELEVEL						0

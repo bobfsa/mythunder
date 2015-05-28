@@ -116,16 +116,16 @@ void boardctl::submit_gpstime(void *data, size_t len)
 }
 
 void boardctl::submit_location(void * data, size_t len)
-{
+{
 	memcpy(m_location, data, len);
 }
 	
 void boardctl::submit_angle(void * data, size_t len)
-{
+{
 	memcpy(m_angle, data, len);
 }
 void boardctl::submit_valid_locate(void * data, size_t len)
-{
+{
 	memcpy(m_valid, data, len);
 }
 	
@@ -221,10 +221,10 @@ void *boardctl::sub_routine(void)
 			//printf("cap: %d index:%d\n", caplen, index);
 			
 			//if(caplen == 0) //for search again
-			//	pre_sock_NULL=1;
+			//	pre_sock_NULL=1;
 		}
 		else if(m_upsock && (pre_sock_NULL == 0))
-		{
+		{
 		}
 		else if(!m_upsock)
 		{
