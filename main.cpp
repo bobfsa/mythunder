@@ -278,7 +278,29 @@ void on_socket_event(struct bufferevent *bev, short ev, void *ctx)
 	{
 		printf("%s socket event: 0x%x sock:0x%x\n", __func__, ev, psock);
 		if(psock)
-			psock->release();		
+		{
+			psock->release();	
+			if(server_mode &&  psock == g_datasock)
+			{
+				g_myboard->set_data_sock(NULL);
+				sockmutex.lock();
+				psock = socklist.front();
+				printf("front: 0x%x datasock:0x%x\n", psock, g_datasock);
+				delete g_datasock;
+				g_datasock=NULL;
+				socklist.pop_front();
+					
+				printf("list size: 0x%x\n", socklist.size());
+			
+				if(!socklist.empty())
+				{
+					psock = socklist.front();
+					g_datasock=psock;
+					g_myboard->set_data_sock(psock); 
+				}
+				sockmutex.unlock();
+			}
+		}
 	}
 	if(ev & BEV_EVENT_CONNECTED)
 	{
@@ -301,25 +323,6 @@ void handle_timeout(int nSock, short sWhat, void * pArg)
 	{
 		if(server_mode )
 		{
-			printf("start change data_sock\n");
-			g_myboard->set_data_sock(NULL);
-			
-			sockmutex.lock();
-			psock = socklist.front();
-			printf("front: 0x%x datasock:0x%x\n", psock, g_datasock);
-			delete g_datasock;
-			g_datasock=NULL;
-			socklist.pop_front();
-
-			printf("list size: 0x%x\n", socklist.size());
-			
-			if(!socklist.empty())
-			{
-				psock = socklist.front();
-				g_datasock=psock;
-				g_myboard->set_data_sock(psock); 
-			}
-			sockmutex.unlock();
 		}
 		else
 		{
@@ -327,14 +330,6 @@ void handle_timeout(int nSock, short sWhat, void * pArg)
 			{
 				g_datasock->setcb(on_datasock_read, on_sock_write, on_socket_event);
 			}
-		}
-	}
-	if(g_gpssock)
-	{
-		if(g_gpssock->get_status() == sock_uninit)
-		{
-			if(g_gpssock->restart() == 0) 
-				g_gpssock->setcb(NULL, on_sock_write, on_socket_event);
 		}
 	}
 }
