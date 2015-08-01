@@ -68,9 +68,9 @@ void *EIMDATA::sub_routine(void)
 		
 		if(nbytes == 0)
 		{
-			usleep(5000);			
+			usleep(1000);			
 			idle_cnt++;
-			if(idle_cnt > 600)
+			if(idle_cnt > 400)
 			{
 				search_mutex.lock();
 				m_first_searched = 0;

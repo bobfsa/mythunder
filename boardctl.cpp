@@ -182,7 +182,7 @@ void *boardctl::sub_routine(void)
 	caplen=0;
 	while(m_brunning)
 	{
-		usleep(500000);
+		usleep(200000);
 		
 		if(m_upsock && pre_sock_NULL)
 		{
@@ -209,6 +209,11 @@ void *boardctl::sub_routine(void)
 				if(caplen > 0 )
 				{
 					memcpy(repdata->capdata, tmpdata+(index*2), caplen);	
+
+					if(m_upsock)
+					{
+						m_upsock->submit((char *)repdata->capdata, caplen);		
+					}
 				}
 
 
@@ -249,11 +254,21 @@ void *boardctl::sub_routine(void)
 		if( (buflen+caplen) >= DATA_PALOAD_LEN)
 		{
 			evbuffer_remove( m_rxevbuf,  &repdata->capdata[caplen], DATA_PALOAD_LEN-caplen);
+			if(m_upsock)
+			{
+				m_upsock->submit((char *)&repdata->capdata[caplen], DATA_PALOAD_LEN-caplen);		
+			}
+			
 			caplen=0;
 		}
 		else
 		{			
 			evbuffer_remove(m_rxevbuf,  &repdata->capdata[caplen], buflen);
+			if(m_upsock)
+			{
+				m_upsock->submit((char *)&repdata->capdata[caplen], buflen);		
+			}
+			
 			caplen+=buflen;
 			continue ;
 		}
@@ -269,10 +284,10 @@ void *boardctl::sub_routine(void)
 #endif	
 		printf("can send one pkt: %d\r\n",  cnt);
 		cnt++;
-		if(m_upsock)
+		//if(m_upsock)
 		{
 			//printf("board ctl %s send one pkt\n", __func__);
-			m_upsock->submit((char *)repdata, sizeof(targetreply_data));		
+			//m_upsock->submit((char *)repdata, sizeof(targetreply_data));		
 			//m_upsock->submit((char *)repdata->capdata, DATA_PALOAD_LEN);
 		}
 	}
