@@ -159,7 +159,7 @@ int main(int argc, char *argv[])
 		server_mode=1;
 	else
 		server_mode=0;
-
+#if 0
 	gpsport = new Serialport();
 	if(gpsport->init("/dev/ttymxc0", 1, 115200, 1) != 0)
 	{
@@ -167,7 +167,7 @@ int main(int argc, char *argv[])
 		delete gpsport;
 		return -1;
 	}
-	
+#endif	
 	devfd=open("/dev/eimfpga",O_RDWR);	
 	if(devfd < 0)	
 	{		
@@ -181,10 +181,11 @@ int main(int argc, char *argv[])
 	g_datafs=new CFilesys_mgr("/dev/sda1","/eim/data",0x80000000);//512GB
 	g_eimdata=new EIMDATA();
 
-
+#if 0
 	g_hidtemp=new temperdev();
 	g_hidtemp->init("/dev/hiddev0", g_myboard);
-		
+#endif
+
 	signal(SIGPIPE, SIG_IGN);
 	signal(SIGILL,  illegal_inst_handler);
 	signal(SIGINT,	illegal_inst_handler);
@@ -229,7 +230,9 @@ int main(int argc, char *argv[])
 	//g_eimdata->init(devfd, g_datafs, g_datasock);	
 	g_eimdata->init(devfd, g_datafs, g_myboard);
 
+#if 0
 	gpsport->set_boardctl(g_myboard);
+#endif
 
 	g_myboard->init(NULL);
 	g_myboard->set_data_interface(g_eimdata);

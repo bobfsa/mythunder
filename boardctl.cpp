@@ -258,7 +258,7 @@ void *boardctl::sub_routine(void)
 			continue ;
 		}
 
-
+#if 0
 		repdata->msg_hdr=TARGET_REQ_DATA;
 		repdata->msg_type=msg_datapacket;
 		memcpy(repdata->temparture, m_temparture, sizeof(m_temparture));
@@ -266,7 +266,7 @@ void *boardctl::sub_routine(void)
 		memcpy(repdata->valid_location, m_valid, sizeof(m_valid));
 		memcpy(repdata->gps_location, m_location, sizeof(m_location));
 		memcpy(repdata->yaw_angle, m_angle, sizeof(m_angle));
-		
+#endif	
 		printf("can send one pkt: %d\r\n",  cnt);
 		cnt++;
 		if(m_upsock)

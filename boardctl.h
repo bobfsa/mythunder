@@ -7,7 +7,7 @@
 #define HOST_REQ_HDR 0x5A5A
 #define TARGET_REQ_DATA 0x6C6D
 
-#define DATA_PALOAD_LEN 1040000
+#define DATA_PALOAD_LEN 1272000
 
 enum{
 	msg_GPS=0x0110,
@@ -32,6 +32,7 @@ typedef struct
 
 typedef struct 
 {
+#if 0
 	u16 msg_hdr;
 	u16 msg_type;
 	u8 gps_time[12];
@@ -40,6 +41,7 @@ typedef struct
 	u8 yaw_angle[8];
 	u8 temparture[4];
 	u8 reserved[4];
+#endif
 	u8 capdata[DATA_PALOAD_LEN];
 }__attribute__((packed))  targetreply_data;
 
