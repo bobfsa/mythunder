@@ -105,6 +105,58 @@ void boardctl::submit(void *buf, size_t size)
 	
 }
 
+void boardctl::set_sys_time()
+{
+	static char datestr[MAX_PATH];
+	static char tmp[20];
+	u32 year,month,date,hour,minute,second;
+
+	memset(tmp, 0, sizeof(tmp));
+	memcpy(tmp, m_gpstime, 2);
+	year=atoi(tmp);//year;
+	memcpy(tmp, &m_gpstime[2], 2);
+	month=atoi(tmp);//month;
+	memcpy(tmp, &m_gpstime[4], 2);
+	date=atoi(tmp);//date;
+	memcpy(tmp, &m_gpstime[6], 2);
+	hour=atoi(tmp);//h;
+	memcpy(tmp, &m_gpstime[8], 2);
+	minute=atoi(tmp);//m;
+	memcpy(tmp, &m_gpstime[10], 2);
+	second=atoi(tmp);//s;
+	memset(datestr, 0, sizeof(datestr));
+	sprintf(datestr,"date -s \"20%d-%d-%d %d:%d:%d\"",year,month,date, hour,minute,second);
+	printf("try commnad: %s\n", datestr);
+	system(datestr);
+
+	//m_syssecond=(u32)time(NULL);
+	//printf("now m_syssecond:%d\n",m_syssecond);
+
+}
+
+void boardctl::add_sys_second()
+{
+	m_syssecond++;
+}
+
+void boardctl::get_sys_time()
+{
+	static char timestr[MAX_PATH];
+	struct tm *local;
+
+	m_syssecond=(u32)time(NULL);
+	
+	memset(timestr, 0, sizeof(timestr));
+	local=localtime((time_t *)&m_syssecond);
+	sprintf(timestr,"%02x%02x%02x%02x%02x%02x",local->tm_year,local->tm_mon,local->tm_mday,\
+		local->tm_hour,local->tm_min, local->tm_sec);
+	printf("time :%s\n", timestr);
+	timemutex.lock();
+	memcpy(m_gpstime, timestr, 12);
+	timemutex.unlock();
+}
+
+
 void boardctl::submit_tempature(void *data, size_t len)
 {
 	memcpy(m_temparture, data, len);
@@ -112,7 +164,16 @@ void boardctl::submit_tempature(void *data, size_t len)
 
 void boardctl::submit_gpstime(void *data, size_t len)
 {
-	memcpy(m_gpstime, data, len);
+	static int init_systime=0;
+
+	if(init_systime == 0)
+	{
+		timemutex.lock();
+		init_systime=1;
+		memcpy(m_gpstime, data, len);
+		set_sys_time();
+		timemutex.unlock();
+	}	
 }
 
 void boardctl::submit_location(void * data, size_t len)
@@ -258,7 +319,8 @@ void *boardctl::sub_routine(void)
 			continue ;
 		}
 
-
+		get_sys_time();
+		
 		repdata->msg_hdr=TARGET_REQ_DATA;
 		repdata->msg_type=msg_datapacket;
 		memcpy(repdata->temparture, m_temparture, sizeof(m_temparture));

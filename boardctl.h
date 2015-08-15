@@ -63,8 +63,10 @@ public:
 	void submit_angle(void * data, size_t len);
 	void submit_valid_locate(void * data, size_t len);
 	void *sub_routine(void);
-
-
+	void set_sys_time();
+	void add_sys_second();
+	void get_sys_time();
+	
 public:
 	DataSocket *m_upsock;
 	DataSocket *m_downsock;
@@ -81,6 +83,8 @@ public:
 	u8 m_direction[4];
 	u8 m_angle[8];
 	u8 m_valid[4];
+	u32 m_syssecond;
+	cmutex timemutex;
 };
 
 
