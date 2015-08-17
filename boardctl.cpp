@@ -148,7 +148,7 @@ void boardctl::get_sys_time()
 	
 	memset(timestr, 0, sizeof(timestr));
 	local=localtime((time_t *)&m_syssecond);
-	sprintf(timestr,"%02x%02x%02x%02x%02x%02x",local->tm_year,local->tm_mon,local->tm_mday,\
+	sprintf(timestr,"%02d%02d%02d%02d%02d%02d",local->tm_year,local->tm_mon,local->tm_mday,\
 		local->tm_hour,local->tm_min, local->tm_sec);
 	printf("time :%s\n", timestr);
 	timemutex.lock();
@@ -165,14 +165,20 @@ void boardctl::submit_tempature(void *data, size_t len)
 void boardctl::submit_gpstime(void *data, size_t len)
 {
 	static int init_systime=0;
+	static char year[4];
 
+	memset(year, 0, sizeof(year));
 	if(init_systime == 0)
 	{
-		timemutex.lock();
-		init_systime=1;
-		memcpy(m_gpstime, data, len);
-		set_sys_time();
-		timemutex.unlock();
+		memcpy(year, data, 2);
+		if((strcmp(year,"15")==0)||(strcmp(year,"16")==0)||(strcmp(year,"17")==0))
+		{
+			timemutex.lock();
+			init_systime=1;
+			memcpy(m_gpstime, data, len);
+			set_sys_time();
+			timemutex.unlock();
+		}
 	}	
 }
 
