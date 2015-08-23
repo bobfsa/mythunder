@@ -148,7 +148,7 @@ void boardctl::get_sys_time()
 	
 	memset(timestr, 0, sizeof(timestr));
 	local=localtime((time_t *)&m_syssecond);
-	sprintf(timestr,"%02d%02d%02d%02d%02d%02d",local->tm_year,local->tm_mon,local->tm_mday,\
+	sprintf(timestr,"%02d%02d%02d%02d%02d%02d",local->tm_year-100,local->tm_mon+1,local->tm_mday,\
 		local->tm_hour,local->tm_min, local->tm_sec);
 	printf("time :%s\n", timestr);
 	timemutex.lock();
