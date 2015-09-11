@@ -143,8 +143,15 @@ void boardctl::get_sys_time()
 {
 	static char timestr[MAX_PATH];
 	struct tm *local;
+	static int timeflag=0;
 
-	m_syssecond=(u32)time(NULL);
+	if(timeflag == 0)
+	{
+		m_syssecond=(u32)time(NULL);
+		timeflag=1;
+	}
+	else
+		m_syssecond++;
 	
 	memset(timestr, 0, sizeof(timestr));
 	local=localtime((time_t *)&m_syssecond);

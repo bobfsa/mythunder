@@ -329,7 +329,7 @@ void *Serialport::sub_routine(void)
 		sprintf(&buf[6], "%02d",tmp_time);
 		memcpy(buf, &(t_rxgpspkt.time),6);
 		memcpy(&buf[8], &(t_rxgpspkt.time[8]), 4);		
-		printf("time: %s\n", buf);
+		// printf("time: %s\n", buf);
 		memcpy(t_rxgpspkt.time, buf, 12);
 		
 		memset(buf, 0, sizeof(buf));
