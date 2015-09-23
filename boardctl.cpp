@@ -66,6 +66,8 @@ boardctl::boardctl()
 	m_brunning=0;
 	m_upsock=NULL;
 	m_rxevbuf=evbuffer_new();
+	init_systime=0;
+	packetime_flag=0;
 	if(!m_rxevbuf)
 		printf("%s new evbuffer failed\n", __func__);
 	ret=evbuffer_enable_locking(m_rxevbuf, NULL);
@@ -111,6 +113,7 @@ void boardctl::set_sys_time()
 	static char tmp[20];
 	u32 year,month,date,hour,minute,second;
 
+	timemutex.lock();
 	memset(tmp, 0, sizeof(tmp));
 	memcpy(tmp, m_gpstime, 2);
 	year=atoi(tmp);//year;
@@ -128,27 +131,28 @@ void boardctl::set_sys_time()
 	sprintf(datestr,"date -s \"20%d-%d-%d %d:%d:%d\"",year,month,date, hour,minute,second);
 	printf("try commnad: %s\n", datestr);
 	system(datestr);
+	timemutex.unlock();
 
 	//m_syssecond=(u32)time(NULL);
 	//printf("now m_syssecond:%d\n",m_syssecond);
 
 }
 
-void boardctl::add_sys_second()
-{
-	m_syssecond++;
-}
 
-void boardctl::get_sys_time()
+int boardctl::get_sys_time()
 {
 	static char timestr[MAX_PATH];
 	struct tm *local;
-	static int timeflag=0;
 
-	if(timeflag == 0)
+	if(!init_systime)
+	{
+		return 0;
+	}
+
+	if(packetime_flag == 0)
 	{
 		m_syssecond=(u32)time(NULL);
-		timeflag=1;
+		packetime_flag=1;
 	}
 	else
 		m_syssecond++;
@@ -161,8 +165,18 @@ void boardctl::get_sys_time()
 	timemutex.lock();
 	memcpy(m_gpstime, timestr, 12);
 	timemutex.unlock();
+	return 1;
 }
 
+
+void boardctl::reset_sys_time()
+{
+	timemutex.lock();
+	init_systime=0;
+	packetime_flag=0;
+	timemutex.unlock();
+	return ;
+}
 
 void boardctl::submit_tempature(void *data, size_t len)
 {
@@ -171,7 +185,6 @@ void boardctl::submit_tempature(void *data, size_t len)
 
 void boardctl::submit_gpstime(void *data, size_t len)
 {
-	static int init_systime=0;
 	static char year[4];
 
 	memset(year, 0, sizeof(year));
@@ -260,6 +273,8 @@ void *boardctl::sub_routine(void)
 		
 		if(m_upsock && pre_sock_NULL)
 		{
+			reset_sys_time();
+			
 			caplen=evbuffer_get_length(m_rxevbuf);
 			if(caplen)
 			{
@@ -332,7 +347,8 @@ void *boardctl::sub_routine(void)
 			continue ;
 		}
 
-		get_sys_time();
+		if(!get_sys_time())
+			continue ;
 		
 		repdata->msg_hdr=TARGET_REQ_DATA;
 		repdata->msg_type=msg_datapacket;
