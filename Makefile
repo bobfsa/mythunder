@@ -41,14 +41,14 @@ LOCALE_LIB 	= 	\
 # =====================================================================================#
 # system toolchain
 # =====================================================================================#
-GCC_C_FLAGS 	= $(C_FLAGS) -Wall -g0 -O0 $(SYS_INCLUDE) $(LOCAL_INCLUDE)
+GCC_C_FLAGS 	= $(C_FLAGS) -Wall -g0 -O2 -fno-strict-aliasing $(SYS_INCLUDE) $(LOCAL_INCLUDE)
 GCC_COMPILE.c 	= $(CROSS_COMPILE)armv7l-timesys-linux-gnueabi-g++ 
 
 export $(GCC_C_FLAGS) $(GCC_COMPILE.c)
 
 GCC_LD_FLAGS	= $(LD_FLAGS) $(SYS_LIB)
 
-GCC_CXX_FLAGS 	= $(C_FLAGS) -Wall -g0 -O0 $(SYS_INCLUDE) $(LOCAL_INCLUDE)  -fno-strict-aliasing
+GCC_CXX_FLAGS 	= $(C_FLAGS) -Wall -g0 -O2 $(SYS_INCLUDE) $(LOCAL_INCLUDE)  -fno-strict-aliasing
 #GCC_CXX_FLAGS 	= $(C_FLAGS) -Wall -Werror $(SYS_INCLUDE)
 GCC_COMPILE.cxx	= $(CROSS_COMPILE)armv7l-timesys-linux-gnueabi-g++ -c $(GCC_CXX_FLAGS)  -o $@ $<
 GCC_LINK.cxx	= $(CROSS_COMPILE)armv7l-timesys-linux-gnueabi-g++  -o $@ $^ $(GCC_LD_FLAGS) $(LOCALE_LIB)
@@ -74,8 +74,6 @@ SUPPORT_ICONV  	= no
 # global compile flags
 # =====================================================================================#
 # gcc flags user define
-#GCC_CXX_FLAGS 	+= -DCONFIG_AUDIO_DUMP
-# set alsa soc working in nonblocking mode
 GCC_CXX_FLAGS 	+= -DCONFIG_NONBLOCKING_MODE -DDSPGUN
 # set alsa soc working in no interleaved access mode
 
@@ -102,17 +100,6 @@ SOURCES 	= main.cpp 	\
 # =====================================================================================#
 LIBS 	=
 
-# =====================================================================================#
-# libiconv module
-# =====================================================================================#
-ifeq ($(SUPPORT_ICONV), yes)
-SOURCES 	+= \
-	aisound.cpp
-GCC_CXX_FLAGS 	+= -DCONFIG_CODEPAGE_CONVERT
-LOCALE_LIB 	+= \
-	./libiconv/lib/.libs/libiconv.a
-LIBS 		+= iconv
-endif
 
 # =====================================================================================#
 # aisound module
