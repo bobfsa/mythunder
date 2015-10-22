@@ -275,42 +275,9 @@ void *boardctl::sub_routine(void)
 		{
 			reset_sys_time();
 			
-			caplen=evbuffer_get_length(m_rxevbuf);
-			if(caplen)
-			{
-				char *tmpdata=new char[EIMUNIT_HDRLEN];
-
-				evbuffer_remove(m_rxevbuf,  tmpdata, EIMUNIT_HDRLEN);
-				caplen=EIMUNIT_HDRLEN;
-				pdata=(short *)tmpdata;
-				index=0;
-				do
-				{
-					if(*pdata == EIMUNIT_HEADER && *(pdata+1)==EIMUNIT_HDRLEN)
-					{		
-						break;
-					}
-					pdata++;
-					index++;
-				}while((index*2)<caplen);
-				
-				caplen-=(index*2);
-				if(caplen > 0 )
-				{
-					memcpy(repdata->capdata, tmpdata+(index*2), caplen);	
-				}
-
-
-				delete []tmpdata;
-			}
-			
+			caplen = 0;
 			printf("board upsock ready!\n");		
 			pre_sock_NULL=0;		
-			
-			//printf("cap: %d index:%d\n", caplen, index);
-			
-			//if(caplen == 0) //for search again
-			//	pre_sock_NULL=1;
 		}
 		else if(m_upsock && (pre_sock_NULL == 0))
 		{
@@ -321,21 +288,8 @@ void *boardctl::sub_routine(void)
 			pre_sock_NULL=1;
 		}
 
-#if 0
-		if(evbuffer_get_length(m_rxevbuf) >= (DATA_PALOAD_LEN-resilen))
-		{
-			evbuffer_remove( m_rxevbuf,  &repdata->capdata[resilen], DATA_PALOAD_LEN-resilen);
-			resilen=0;
-		}
-		else
-		{
-			//printf("m_rxevbuf len: %d\n", evbuffer_get_length(m_rxevbuf));
-			 continue ;
-		}
-#endif
-
 		buflen=evbuffer_get_length(m_rxevbuf);
-		if( (buflen+caplen) >= DATA_PALOAD_LEN)
+		if( (buflen+caplen) >= 0x40000)
 		{
 			evbuffer_remove( m_rxevbuf,  &repdata->capdata[caplen], DATA_PALOAD_LEN-caplen);
 			caplen=0;
@@ -347,8 +301,8 @@ void *boardctl::sub_routine(void)
 			continue ;
 		}
 
-		if(!get_sys_time())
-			continue ;
+		get_sys_time();
+
 		
 		repdata->msg_hdr=TARGET_REQ_DATA;
 		repdata->msg_type=msg_datapacket;

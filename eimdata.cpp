@@ -69,37 +69,11 @@ void *EIMDATA::sub_routine(void)
 		if(nbytes == 0)
 		{
 			usleep(5000);			
-			idle_cnt++;
-			if(idle_cnt > 600)
-			{
-				search_mutex.lock();
-				m_first_searched = 0;
-				search_mutex.unlock();
-				
-				write(m_devfd, readdata, 1);
-				idle_cnt = 0;
-			}
 			continue ;
 		}
 
 		idle_cnt = 0;
 		index=0;
-		if(m_first_searched == 0)
-		{
-			pdata=(short *)readdata;
-			index=0;
-			do
-			{
-				if(*pdata == EIMUNIT_HEADER && *(pdata+1)==EIMUNIT_HDRLEN)
-				{		
-					m_first_searched=1;
-					break;
-				}
-				pdata++;
-				index++;
-			}while((index*2)<nbytes);
-			continue ;
-		}
 		
 	
 		//if(m_fssave)
@@ -107,7 +81,7 @@ void *EIMDATA::sub_routine(void)
 		//if(m_sock)
 		//	m_sock->submit(readdata, nbytes);
 		if(m_outctl)
-			m_outctl->submit(&(readdata[index*2]), nbytes-(index*2));
+			m_outctl->submit(readdata, nbytes);
 	}	
 
 	//printf("EIM %s exit\n", __func__);
