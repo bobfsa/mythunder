@@ -68,7 +68,7 @@ void *EIMDATA::sub_routine(void)
 		
 		if(nbytes == 0)
 		{
-			usleep(5000);			
+			usleep(500);			
 			continue ;
 		}
 
@@ -76,10 +76,6 @@ void *EIMDATA::sub_routine(void)
 		index=0;
 		
 	
-		//if(m_fssave)
-		//	m_fssave->submit(readdata, nbytes);
-		//if(m_sock)
-		//	m_sock->submit(readdata, nbytes);
 		if(m_outctl)
 			m_outctl->submit(readdata, nbytes);
 	}	

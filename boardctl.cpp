@@ -269,12 +269,10 @@ void *boardctl::sub_routine(void)
 	caplen=0;
 	while(m_brunning)
 	{
-		usleep(500000);
+		usleep(50000);
 		
 		if(m_upsock && pre_sock_NULL)
 		{
-			reset_sys_time();
-			
 			caplen = 0;
 			printf("board upsock ready!\n");		
 			pre_sock_NULL=0;		
@@ -301,7 +299,6 @@ void *boardctl::sub_routine(void)
 			continue ;
 		}
 
-		get_sys_time();
 
 		
 		repdata->msg_hdr=TARGET_REQ_DATA;
@@ -316,9 +313,7 @@ void *boardctl::sub_routine(void)
 		cnt++;
 		if(m_upsock)
 		{
-			//printf("board ctl %s send one pkt\n", __func__);
 			m_upsock->submit((char *)repdata, sizeof(targetreply_data));		
-			//m_upsock->submit((char *)repdata->capdata, DATA_PALOAD_LEN);
 		}
 	}
 
