@@ -10,7 +10,7 @@ typedef struct
 {
 	char header[6];
 	char time[12];
-	char availabe[1];
+	char available[1];
 	char longitude[8];
 	char latitude[8];
 	char 	angle[8];

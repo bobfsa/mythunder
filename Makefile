@@ -1,6 +1,6 @@
                                                                                       
 # =====================================================================================#
-# build enviroment include
+# build environment include
 # =====================================================================================#
 #CROSS_TOOL_DIR = /home/work/licett/project/imx6/firmware/i_MX6QSABRELite/toolchain
 #CROSS_COMPILE = $(CROSS_TOOL_DIR)/bin/

@@ -333,8 +333,8 @@ void *Serialport::sub_routine(void)
 		memcpy(t_rxgpspkt.time, buf, 12);
 		
 		memset(buf, 0, sizeof(buf));
-		memcpy(buf, (t_rxgpspkt.availabe), 1);
-		printf("availabe: %s\n", buf);
+		memcpy(buf, (t_rxgpspkt.available), 1);
+		printf("available: %s\n", buf);
 		memset(buf, 0, sizeof(buf));
 		memcpy(buf, t_rxgpspkt.longitude, 8);
 		printf("longitude: %s\n", buf);
@@ -348,7 +348,7 @@ void *Serialport::sub_routine(void)
 		{
 			m_board->submit_gpstime(t_rxgpspkt.time, 12);
 			m_board->submit_location(t_rxgpspkt.longitude, 16);
-			m_board->submit_valid_locate(t_rxgpspkt.availabe, 1);
+			m_board->submit_valid_locate(t_rxgpspkt.available, 1);
 			m_board->submit_angle(t_rxgpspkt.angle, 8);
 		}
 		
