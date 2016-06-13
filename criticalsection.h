@@ -38,7 +38,7 @@ public:
 	pthread_mutex_t mutex_;
 };
 
-/** The Ccritical_scope class for serializing exection through a scope
+/** The Ccritical_scope class for serializing execution through a scope
  *
  */
 class mutex_scope {
