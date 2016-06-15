@@ -7,7 +7,6 @@
 #include "boardctl.h"
 
 
-////my test for git
 
 Serialport *gpsport=NULL;
 DataSocket *g_datasock=NULL;
