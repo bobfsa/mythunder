@@ -372,6 +372,7 @@ void do_accept(evutil_socket_t listener, short event, void *arg)
     struct event_base *base = (struct event_base *)arg;  
     struct sockaddr_storage ss;  
     socklen_t slen = sizeof(ss);  
+	int optval, ret;
 	
     int fd = accept(listener, (struct sockaddr*)&ss, &slen);  
     if (fd < 0)  
@@ -384,8 +385,27 @@ void do_accept(evutil_socket_t listener, short event, void *arg)
         close(fd);  
     }  
     else  
-    {  
+    {
     	printf("accept new fd: %d\n", fd);
+	ret =setsockopt(fd, SOL_SOCKET, SO_KEEPALIVE, (char*)&optval, sizeof(optval));
+	if(ret != 0)
+		printf("SO_KEEPALIVE failed\n");
+		
+
+	int keepIdle=20; //idle time before trigger
+	ret = setsockopt(fd, SOL_TCP,TCP_KEEPIDLE,(void *)&keepIdle,sizeof(keepIdle));
+	if(ret != 0)
+		printf("TCP_KEEPIDLE failed\n");
+
+	int keepInterval=60; //interval time between trigger
+	ret =setsockopt(fd,SOL_TCP,TCP_KEEPINTVL,(void *)&keepInterval,sizeof(keepInterval));
+	if(ret != 0)
+		printf("TCP_KEEPINTVL failed\n");
+
+	int keepCount=3; //connect out try count
+	ret =setsockopt(fd, SOL_TCP,TCP_KEEPCNT,(void *)&keepCount,sizeof(keepCount));
+	if(ret != 0)
+		printf("TCP_KEEPCNT failed\n");
 		
         struct bufferevent *bev;  
 
