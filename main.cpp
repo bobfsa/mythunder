@@ -5,7 +5,6 @@
 #include "filesysmgr.h"
 #include "eimdata.h"
 #include "boardctl.h"
-#include "heartsocket.h"
 
 
 
@@ -29,11 +28,6 @@ cmutex sockmutex;
 char *svr_ipaddr;
 unsigned int svr_port;
 
-enum
-{
-	data_server,
-	heartbeat_server,
-};
 
 #define SEND_UNIT   496
 
@@ -44,7 +38,7 @@ void on_datasock_read(struct bufferevent *cb, void *ctx);
 void on_sock_write(struct bufferevent *cb, void *ctx);
 void on_socket_event(struct bufferevent *bev, short ev, void *ctx);
 void handle_timeout(int nSock, short sWhat, void * pArg);
-void set_socket_server_start(struct event_base *mybase, int port, int type);
+void set_socket_server_start(struct event_base *mybase, int port);
 void do_accept(evutil_socket_t listener, short event, void *arg);
 
 struct event_base *my_evbase;
@@ -212,8 +206,7 @@ int main(int argc, char *argv[])
 	{
 		int port=atoi(argv[2]);
 		printf("You specify server listen on  port: %d\n", port);
-		set_socket_server_start(my_evbase, port,  data_server);
-		set_socket_server_start(my_evbase, port+1, heartbeat_server);
+		set_socket_server_start(my_evbase, port);
 	}
 	else
 	{
@@ -261,7 +254,15 @@ void on_datasock_read(struct bufferevent *bev, void *ctx)
 	DataSocket *psock=(DataSocket *)ctx;
 	struct evbuffer *input=bufferevent_get_input(bev);
 	size_t len=evbuffer_get_length(input);
-	
+        struct timeval tm={0};
+
+#ifdef CONN_TIMEOUT
+	evtimer_del((psock->conntimer));	
+	tm.tv_sec = 6;
+	psock->conntimer=evtimer_new(psock->m_evbase, handle_timeout, bev);
+	evtimer_add((psock->conntimer), &tm);
+#endif
+
 	printf("%s 0x%x len: %d \n", __func__, ctx, len);
 	evbuffer_remove(input, data, 100);
 
@@ -269,20 +270,6 @@ void on_datasock_read(struct bufferevent *bev, void *ctx)
 	printf("%x %x %x %x\n",data[0],data[1],data[2],data[3]);
 	
 }
-
-
-void on_heartsock_read(struct bufferevent *bev, void *ctx)
-{	
-	HeartSocket *psock=(HeartSocket *)ctx;	
-    	struct timeval tTimeout = {10, 0};
-
-	evtimer_del(&psock->evtimer);
-	
-	event_assign(&psock->evtimer, base, -1, EV_PERSIST, handle_timeout, NULL);
-	evtimer_add(&psock->evtimer, &tTimeout);	
-}
-
-
 void  on_sock_write(struct bufferevent *bev, void *ctx)
 {
 	DataSocket *psock=(DataSocket *)ctx;	
@@ -334,61 +321,40 @@ void on_socket_event(struct bufferevent *bev, short ev, void *ctx)
 		printf("on_socket_event BEV_EVENT_TIMEOUT:%d\n", ev);
 }
 
-
-void on_heartsock_event(struct bufferevent *bev, short ev, void *ctx)
-{
-	DataSocket *psock=(DataSocket *)ctx;	
-	//printf("%s sock:0x%x event:0x%x\n", __func__, psock, ev);
-	if (ev & (BEV_EVENT_ERROR|BEV_EVENT_EOF)) 
-	{
-		printf("%s socket event: 0x%x sock:0x%x\n", __func__, ev, psock);
-		if(psock)
-		{
-			psock->release();	
-			if(server_mode &&  psock == g_datasock)
-			{
-				g_myboard->set_data_sock(NULL);
-				sockmutex.lock();
-				psock = socklist.front();
-				printf("front: 0x%x datasock:0x%x\n", psock, g_datasock);
-				delete g_datasock;
-				g_datasock=NULL;
-				socklist.pop_front();
-					
-				printf("list size: 0x%x\n", socklist.size());
-			
-				if(!socklist.empty())
-				{
-					psock = socklist.front();
-					g_datasock=psock;
-					g_myboard->set_data_sock(psock); 
-				}
-				sockmutex.unlock();
-			}
-		}
-	}
-	if(ev & BEV_EVENT_CONNECTED)
-	{
-		printf("socket %d connect OK\n", psock->m_sockfd);
-	}
-	if(ev & BEV_EVENT_READING)
-		printf("on_socket_event BEV_EVENT_READING:%d\n", ev);
-	if(ev & BEV_EVENT_WRITING)
-		printf("on_socket_event BEV_EVENT_WRITING:%d\n", ev);
-	if(ev & BEV_EVENT_TIMEOUT)
-		printf("on_socket_event BEV_EVENT_TIMEOUT:%d\n", ev);
-}
-
 void handle_timeout(int nSock, short sWhat, void * pArg)
 {
 	DataSocket *psock;
+	struct bufferevent *pbuf;
+	printf("handle_timeout #############\r\n");
 	printf("g_datasock 0x%x status:0x%x\n", g_datasock, ((!g_datasock)?0:g_datasock->get_status()));
+	
+#ifdef CONN_TIMEOUT
+	if(pArg != NULL)
+	{
+		//in fact, pArg == g_datasock
+		// see on_socket_event, just close socket
+		pbuf=(struct bufferevent *)pArg;
+		//event_active(&(pbuf->ev_write), BEV_EVENT_ERROR, 1);
+		//on_socket_event(pbuf, BEV_EVENT_ERROR,  psock);
+	}
+#endif
+
 	if(g_datasock && (g_datasock->get_status() != sock_dataing))
 	{
+		if(server_mode )
+		{
+		}
+		else
+		{
+			if(g_datasock->restart() == 0)
+			{
+				g_datasock->setcb(on_datasock_read, on_sock_write, on_socket_event);
+			}
+		}
 	}
 }
 
-void set_socket_server_start(struct event_base *mybase, int port, int type)
+void set_socket_server_start(struct event_base *mybase, int port)
 {
 	evutil_socket_t listener;  
 	struct sockaddr_in sin;  
@@ -415,16 +381,10 @@ void set_socket_server_start(struct event_base *mybase, int port, int type)
 		return;  
 	}  
 
-	if(type == data_server)
-	{
-		listener_event = event_new(mybase, listener, EV_READ|EV_PERSIST, do_accept, (void*)mybase);  
-	}
-	else if(type == heartbeat_server)
-	{
-		listener_event = event_new(mybase, listener, EV_READ|EV_PERSIST, do_accept_heart, (void*)mybase);  
-	}
+	listener_event = event_new(mybase, listener, EV_READ|EV_PERSIST, do_accept, (void*)mybase);  
+	/*XXX check it */  
 	event_add(listener_event, NULL);  
-
+	
 	return ;
 }
 
@@ -471,55 +431,22 @@ void do_accept(evutil_socket_t listener, short event, void *arg)
         struct bufferevent *bev;  
 
 		//DataSocket *g_tmpsock=new DataSocket();
-	DataSocket *t_clientsock=new DataSocket();
-	printf("new DataSocket: 0x%x\n", t_clientsock);
-       	evutil_make_socket_nonblocking(fd);  
-	
-	t_clientsock->init(fd, base);
-	t_clientsock->setcb(on_datasock_read, on_sock_write, on_socket_event);
+		DataSocket *t_clientsock=new DataSocket();
+		printf("new DataSocket: 0x%x\n", t_clientsock);
+       		evutil_make_socket_nonblocking(fd);  
+		
+		t_clientsock->init(fd, base);
+		t_clientsock->setcb(on_datasock_read, on_sock_write, on_socket_event);
 
-	sockmutex.lock();
-	socklist.push_back(t_clientsock);
-	printf("list size: 0x%x\n", socklist.size());
-	if(socklist.size() == 1)
-	{
-		g_datasock=t_clientsock;
-		g_myboard->set_data_sock(g_datasock);
-	}
-	sockmutex.unlock();
-    }  
-}  
-
-
-void do_accept_heart(evutil_socket_t listener, short event, void *arg)  
-{  
-    struct event_base *base = (struct event_base *)arg;  
-    struct sockaddr_storage ss;  
-    socklen_t slen = sizeof(ss);  
-    struct timeval tTimeout = {10, 0};
-	
-    int fd = accept(listener, (struct sockaddr*)&ss, &slen);  
-    if (fd < 0)  
-    {  
-        printf("accept error");  
-    }  
-    else if (fd > FD_SETSIZE)  
-    {  
-    	printf("%s fd > FD_SETSIZE\n",__func__);
-        close(fd);  
-    }  
-    else  
-    {  
-    	printf("accept new fd: %d\n", fd);
-	HeartSocket *t_clientsock=new HeartSocket();
-	printf("new HeartSocket: 0x%x\n", t_clientsock);
-       	evutil_make_socket_nonblocking(fd);  
-	
-	t_clientsock->init(fd, base);
-	t_clientsock->setcb(on_heartsock_read, NULL, on_heartsock_event);
-	
-	event_assign(&t_clientsock->evtimer, base, -1, EV_PERSIST, handle_timeout, NULL);
-	evtimer_add(&t_clientsock->evtimer, &tTimeout);
+		sockmutex.lock();
+		socklist.push_back(t_clientsock);
+		printf("list size: 0x%x\n", socklist.size());
+		if(socklist.size() == 1)
+		{
+			g_datasock=t_clientsock;
+			g_myboard->set_data_sock(g_datasock);
+		}
+		sockmutex.unlock();
     }  
 }  
 

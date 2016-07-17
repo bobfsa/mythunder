@@ -37,6 +37,15 @@ public:
 	void *sub_routine(void);
 	int m_sockfd;
 
+	
+	struct bufferevent *m_bufev;
+	
+	struct event_base *m_evbase;
+#ifdef CONN_TIMEOUT
+	struct event *conntimer;	 
+#endif
+	
+
 private:
 	int m_port;
 	int	m_brunning;
@@ -47,9 +56,6 @@ private:
 
 	char *m_destip;
 	char *m_destport;
-	
-	struct event_base *m_evbase;
-	struct bufferevent *m_bufev;
 
 	bufferevent_data_cb readcb;
 	bufferevent_data_cb writecb;

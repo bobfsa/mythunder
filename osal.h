@@ -46,9 +46,14 @@ typedef unsigned char u8;
 #define BUF_LEN 0x200
 
 extern void get_time(char *date, char *time);
+extern void handle_timeout(int nSock, short sWhat, void * pArg);
+
 
 #define ELEVEL						0
 #define EDEBUG(level, format, ...)			{if (ELEVEL<level) printf("<%s><%s:%d>" format, __FILE__, __FUNCTION__, __LINE__, ## __VA_ARGS__);}
+
+// #define CONN_TIMEOUT
+
 
 #endif
 
