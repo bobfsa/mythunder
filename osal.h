@@ -27,6 +27,7 @@
  #include <sys/wait.h>
  #include <netdb.h>
  #include <netinet/tcp.h>
+#include <net/if.h>
 #include <linux/byteorder/little_endian.h>
 #include <sys/ioctl.h>
 #include <linux/hiddev.h>

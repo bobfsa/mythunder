@@ -321,6 +321,22 @@ void on_socket_event(struct bufferevent *bev, short ev, void *ctx)
 		printf("on_socket_event BEV_EVENT_TIMEOUT:%d\n", ev);
 }
 
+int check_hardware(const char *nic_name)
+{
+	struct ifreq ifr;
+	int skfd = socket(AF_INET, SOCK_DGRAM, 0);
+
+	strcpy(ifr.ifr_name, nic_name);
+	if (ioctl(skfd, SIOCGIFFLAGS, &ifr) < 0)
+	{
+		return -1;
+	}
+	if(ifr.ifr_flags & IFF_RUNNING)
+		return 0;  // 网卡已插上网线
+	else 
+		return -1;
+}
+
 void handle_timeout(int nSock, short sWhat, void * pArg)
 {
 	DataSocket *psock;
@@ -338,6 +354,13 @@ void handle_timeout(int nSock, short sWhat, void * pArg)
 		//on_socket_event(pbuf, BEV_EVENT_ERROR,  psock);
 	}
 #endif
+
+	if( check_hardware("eth0") < 0)
+	{
+		printf("check hw failed\n");
+		if(g_datasock)
+			on_socket_event(NULL, BEV_EVENT_ERROR, g_datasock);
+	}
 
 	if(g_datasock && (g_datasock->get_status() != sock_dataing))
 	{
@@ -408,6 +431,7 @@ void do_accept(evutil_socket_t listener, short event, void *arg)
     else  
     {
     	printf("accept new fd: %d\n", fd);
+	optval = 1;
 	ret =setsockopt(fd, SOL_SOCKET, SO_KEEPALIVE, (char*)&optval, sizeof(optval));
 	if(ret != 0)
 		printf("SO_KEEPALIVE failed\n");
